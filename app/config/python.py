@@ -32,11 +32,11 @@ class Python:
     @classmethod
     def setup_pip(cls):
         print("Creating a Python virtual environment...")
-        if not Utils.has_terminal_output(["sudo", Python.VERSION, "-m", "venv", ".venv"]):
+        if not Utils.has_terminal_output(["sudo", Python.VERSION, "-m", "venv", f"{Paths.PROJECT_DIRECTORY}/.venv"]):
             print("Unable to create a Python virtual environment.")
         else:
             print("Activating Python virtual environemnt...")
-            if not Utils.has_terminal_output(["source", ".venv/bin/activate"]):
+            if not Utils.has_terminal_output(["source", f"{Paths.PROJECT_DIRECTORY}/.venv/bin/activate"]):
                 print("Unable to activate Python virtual environment.")
             else:
                 requirements = []
