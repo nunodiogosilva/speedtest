@@ -29,15 +29,20 @@ WantedBy=multi-user.target
 
     @classmethod
     def setup(cls, is_deployment=False):
-        print(f"\nCreating {Service.DESCRIPTION} Systemd service configuration file...")
-        Utils.create_file(Service.CONFIGURATION_FILE)
-        print("Successfully created {Service.DESCRIPTION} Systemd service configuration file.")
-
-        print(f"\nChanging {Service.DESCRIPTION} Systemd service configuration file ownership...")
-        if not Utils.has_terminal_output(["sudo", "chown", "-R", f"{Utils.username()}:root", Service.CONFIGURATION_FILE]):
-            print(f"Unable to change {Service.DESCRIPTION} Systemd service configuration file ownership.")
+        print(
+            f"\nChanging {Service.DESCRIPTION} Systemd service configuration file ownership...")
+        if not Utils.has_terminal_output(["sudo", "chmod", "+x", Service.CONFIGURATION_DIRECTORY]):
+            print(
+                f"Unable to change {Service.DESCRIPTION} Systemd service configuration file ownership.")
         else:
-            print(f"Successfully changed {Service.DESCRIPTION} Systemd service configuration file ownership.")
+            print(
+                f"Successfully changed {Service.DESCRIPTION} Systemd service configuration file ownership.")
+
+            print(
+                f"\nCreating {Service.DESCRIPTION} Systemd service configuration file...")
+            Utils.create_file(Service.CONFIGURATION_FILE)
+            print(
+                "Successfully created {Service.DESCRIPTION} Systemd service configuration file.")
 
             with open(Service.CONFIGURATION_FILE, "r", encoding="utf-8") as file:
                 content = file.read()
@@ -52,13 +57,16 @@ WantedBy=multi-user.target
                             print(
                                 f"Successfully restarted {Service.DESCRIPTION} Systemd service.")
 
-                    print(f"{Service.DESCRIPTION} Systemd service is already configured.")
+                    print(
+                        f"{Service.DESCRIPTION} Systemd service is already configured.")
                 else:
                     is_configured = True
-                    print(f"\nUpdating {Service.DESCRIPTION} Systemd service configuration file...")
+                    print(
+                        f"\nUpdating {Service.DESCRIPTION} Systemd service configuration file...")
                     Utils.update_file(Service.CONFIGURATION_FILE,
-                                    Service.CONFIGURATION, "w")
-                    print(f"Successfully updated {Service.DESCRIPTION} Systemd service configuration file.")
+                                      Service.CONFIGURATION, "w")
+                    print(
+                        f"Successfully updated {Service.DESCRIPTION} Systemd service configuration file.")
 
                     print("\nReloading Systemd files...")
                     if not Utils.has_terminal_output(["sudo", "systemctl", "daemon-reload"]):
@@ -67,7 +75,8 @@ WantedBy=multi-user.target
                     else:
                         print("Successfully reloaded Systemd files.")
 
-                        print(f"\nEnabling {Service.DESCRIPTION} Systemd service...")
+                        print(
+                            f"\nEnabling {Service.DESCRIPTION} Systemd service...")
                         if not Utils.has_terminal_output(["sudo", "systemctl", "enable", f"{Service.NAME}.service"]):
                             is_configured = False
                             print(

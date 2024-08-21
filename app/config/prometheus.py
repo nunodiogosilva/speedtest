@@ -12,7 +12,9 @@ class Prometheus:
 
     METRICS_PORT = 8000
 
-    CONFIGURATION_FILE = "/etc/prometheus/prometheus.yml"
+    CONFIGURATION_DIRECTORY = "/etc/prometheus"
+
+    CONFIGURATION_FILE = f"{CONFIGURATION_DIRECTORY}/prometheus.yml"
 
     CONFIGURATION = f"""
 # Global configuration
@@ -49,15 +51,15 @@ scrape_configs:
 
     @classmethod
     def setup(cls, is_deployment=False):
-        print("\nCreating Prometheus configuration file...")
-        Utils.create_file(Prometheus.CONFIGURATION_FILE)
-        print("Successfully created Prometheus configuration file.")
-
         print("\nChanging Prometheus configuration file ownership...")
-        if not Utils.has_terminal_output(["sudo", "chown", "-R", f"{Utils.username()}:root", Prometheus.CONFIGURATION_FILE]):
+        if not Utils.has_terminal_output(["sudo", "chmod", "+x", Prometheus.CONFIGURATION_DIRECTORY]):
             print("Unable to change Prometheus configuration file ownership.")
         else:
             print("Successfully changed Prometheus configuration file ownership.")
+
+            print("\nCreating Prometheus configuration file...")
+            Utils.create_file(Prometheus.CONFIGURATION_FILE)
+            print("Successfully created Prometheus configuration file.")
 
             with open(Prometheus.CONFIGURATION_FILE, "r", encoding="utf-8") as file:
                 content = file.read()
@@ -74,7 +76,7 @@ scrape_configs:
                     is_configured = True
                     print("\nUpdating Prometheus configuration file...")
                     Utils.update_file(Prometheus.CONFIGURATION_FILE,
-                                    Prometheus.CONFIGURATION, "w")
+                                      Prometheus.CONFIGURATION, "w")
                     print("Successfully updated Prometheus configuration file.")
 
                     print("\nRestarting Prometheus...")
