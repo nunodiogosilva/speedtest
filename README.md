@@ -17,7 +17,7 @@ cd ~ && mkdir services && cd services
 
 * Clone [Speedtest Service](https://github.com/nunodiogosilva/speedtest.git) GitHub repository into */services* directory.
 ```bash
-git clone https://github.com/nunodiogosilva/speedtest.git
+sudo git clone https://github.com/nunodiogosilva/speedtest.git
 ```
 
 ### Create Virtual Environment
