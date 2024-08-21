@@ -18,37 +18,54 @@ class Grafana:
     @classmethod
     def setup(cls, is_deployment=False):
         if not Utils.has_terminal_output(["sudo", "grafana-server", "--version"]):
-            print("Installing prerequisite packages...")
+            print("\nInstalling prerequisite packages...")
             if not Utils.has_terminal_input(["sudo", "apt-get", "install", "-y", "apt-transport-https", "software-properties-common", "wget"]):
                 print("Unable to install prerequisite packages.")
             else:
-                print("Importing GPG key...")
+                print("Successfully installed prerequisite packages.")
+
+                print("\nCreating /etc/apt/keyrings/ directory...")
                 if not Utils.has_terminal_output(["sudo", "mkdir", "-p", "/etc/apt/keyrings/"]):
                     print("Unable to create /etc/apt/keyrings/ directory.")
                 else:
-                    if not Utils.has_terminal_output(["sudo", "wget", "-q", "-O", "-", "https://apt.grafana.com/gpg.key", "|", "gpg", "--dearmor", "|", "sudo", "tee", "/etc/apt/keyrings/grafana.gpg", ">", "/dev/null"]):
+                    print("Successfully created /etc/apt/keyrings/ directory.")
+
+                    print("\nImporting GPG key...")
+                    if not Utils.has_terminal_output(["sudo", "wget", "-q", "-O", "-", "https://apt.grafana.com/gpg.key", "|", "gpg --dearmor", "|", "sudo", "tee", "/etc/apt/keyrings/grafana.gpg", ">", "/dev/null"]):
                         print("Unable to import GPG key.")
                     else:
-                        print("Adding stable releases repository...")
+                        print("Successfully created /etc/apt/keyrings/ directory.")
+
+                        print("\nAdding stable releases repository...")
                         if not Utils.has_terminal_output(["sudo", "echo", '"deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main"', "|", "sudo", "tee", "-a", "/etc/apt/sources.list.d/grafana.list"]):
                             print("Unable to add stable releases repository.")
                         else:
-                            print("Updating packages...")
+                            print("Successfully added stable releases repository.")
+
+                            print("\nUpdating packages...")
                             if not Utils.has_terminal_input(["sudo", "apt-get", "update"]):
                                 print("Unable to update packages.")
                             else:
-                                print("Installing Grafana...")
+                                print("Successfully updated packages.")
+
+                                print("\nInstalling Grafana...")
                                 if not Utils.has_terminal_input(["sudo", "apt-get", "install", "grafana"]):
                                     print("Unable to install Grafana.")
                                 else:
-                                    print("Enabling Grafana...")
+                                    print("Successfully installed Grafana.")
+
+                                    print("\nEnabling Grafana...")
                                     if not Utils.has_terminal_output(["sudo", "systemctl", "enable", "grafana-server"]):
                                         print("Unable to enable Grafana.")
                                     else:
-                                        print("Starting Grafana...")
+                                        print("Successfully enabled Grafana.")
+
+                                        print("\nStarting Grafana...")
                                         if not Utils.has_terminal_output(["sudo", "systemctl", "start", "grafana-server"]):
                                             print("Unable to start Grafana.")
                                         else:
+                                            print("Successfully started Grafana.")
+
                                             grafana = Grafana.connect()
                                             Grafana.update_datasources(grafana)
                                             Grafana.update_dashboards(grafana)
@@ -60,7 +77,7 @@ class Grafana:
             Grafana.update_dashboards(grafana)
 
         if is_deployment:
-            print("Restarting Grafana...")
+            print("\nRestarting Grafana...")
             if not Utils.has_terminal_output(["sudo", "systemctl", "restart", "grafana-server"]):
                 print("Unable to restart Grafana.")
             else:
@@ -69,7 +86,7 @@ class Grafana:
     @classmethod
     def connect(cls):
         print(
-            f"Get Grafana Service Account Token at {Grafana.URL}/org/serviceaccounts .")
+            f"\nGet Grafana Service Account Token at {Grafana.URL}/org/serviceaccounts .")
         api_token = getpass.getpass(
             "Enter your Grafana Service Account Token:\n>")
 
@@ -88,17 +105,17 @@ class Grafana:
 
         if not datasource:
             print(
-                f"Creating Grafana {Prometheus.DATASOURCE['name']} datasource...")
+                f"\nCreating Grafana {Prometheus.DATASOURCE['name']} datasource...")
             grafana.datasource.create_datasource(Prometheus.DATASOURCE)
         else:
             print(
-                f"Updating Grafana {Prometheus.DATASOURCE['name']} datasource...")
+                f"\nUpdating Grafana {Prometheus.DATASOURCE['name']} datasource...")
             grafana.datasource.update_datasource(
                 datasource['id'], Prometheus.DATASOURCE)
 
     @classmethod
     def update_dashboards(cls, grafana):
-        print("Creating and updating Grafana dashboards...")
+        print("\nCreating and updating Grafana dashboards...")
         for filename in os.listdir(Grafana.DASHBOARDS_DIRECTORY):
             if filename.endswith(".json"):
                 dashboard_file = os.path.join(

@@ -65,10 +65,10 @@ scrape_configs:
                 else:
                     print("Successfully changed Prometheus configuration file ownership.")
 
-                    print("\nEditing Prometheus configuration file...")
+                    print("\nUpdating Prometheus configuration file...")
                     Utils.update_file(Prometheus.CONFIGURATION_FILE,
                                     Prometheus.CONFIGURATION, "w")
-                    print("Successfully edited Prometheus configuration file.")
+                    print("Successfully updated Prometheus configuration file.")
 
                     print("\nEnabling Prometheus...")
                     if not Utils.has_terminal_output(["sudo", "systemctl", "enable", "prometheus"]):
@@ -110,10 +110,10 @@ scrape_configs:
                         print("Unable to change Prometheus configuration file ownership.")
                     else:
                         print("Successfully changed Prometheus configuration file ownership.")
-                        print("\nEditing Prometheus configuration file...")
+                        print("\nUpdating Prometheus configuration file...")
                         Utils.update_file(Prometheus.CONFIGURATION_FILE,
                                         Prometheus.CONFIGURATION, "w")
-                        print("Successfully edited Prometheus configuration file.")
+                        print("Successfully updated Prometheus configuration file.")
 
                         print("\nRestarting Prometheus...")
                         if not Utils.has_terminal_output(["sudo", "systemctl", "restart", "prometheus"]):
