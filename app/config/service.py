@@ -42,7 +42,7 @@ WantedBy=multi-user.target
                 f"\nCreating {Service.DESCRIPTION} Systemd service configuration file...")
             Utils.create_file(Service.CONFIGURATION_FILE)
             print(
-                "Successfully created {Service.DESCRIPTION} Systemd service configuration file.")
+                f"Successfully created {Service.DESCRIPTION} Systemd service configuration file.")
 
             with open(Service.CONFIGURATION_FILE, "r", encoding="utf-8") as file:
                 content = file.read()
