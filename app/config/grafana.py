@@ -37,7 +37,7 @@ class Grafana:
 
         grafana = GrafanaFace(
             auth=api_token,
-            host=Prometheus.URL
+            port=Grafana.PORT
         )
 
         return grafana
