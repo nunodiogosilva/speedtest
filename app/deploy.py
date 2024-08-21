@@ -1,14 +1,14 @@
 from app.config.python import Python
-from app.config.prometheus import Prometheus
-from app.config.grafana import Grafana
+# from app.config.prometheus import Prometheus
+# from app.config.grafana import Grafana
 from app.config.service import Service
 
 
 class Deploy:
     def __init__(self):
         Python.setup()
-        Prometheus.setup(is_deployment=True)
-        Grafana.setup(is_deployment=True)
+        # Prometheus.setup(is_deployment=True)
+        # Grafana.setup(is_deployment=True)
         Service.setup(is_deployment=True)
 
 

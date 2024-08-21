@@ -12,7 +12,7 @@ TODO
 ### Clone GitHub Repository
 * Create */services* directory.
 ```bash
-cd ~ && mkdir services && cd services
+cd / && mkdir services && cd services
 ```
 
 * Clone [Speedtest Service](https://github.com/nunodiogosilva/speedtest.git) GitHub repository into */services* directory.
@@ -23,12 +23,12 @@ sudo git clone https://github.com/nunodiogosilva/speedtest.git
 ### Create Virtual Environment
 * Python virutal environments isolate dependencies for projects, allowing different projects to use different packages and versions without conflicts. They ensure clean, independent setups. To create a virtual environment, run the command below in */services/speedtest* directory. This will create a new virtual environment in a local folder named *.venv*
 ```bash
-python3.11 -m venv .venv
+sudo python3.11 -m venv .venv
 ```
 
 * Before you can start installing or using packages in your virtual environment you'll need to activate it in */services/speedtest* directory. Activating a virtual environment will put the virtual environment specific Python and pip executables into your terminal.
 ```bash
-source .venv/bin/activate
+sudo source .venv/bin/activate
 ```
 
 * If you want to switch projects or leave your virtual environment, you may deactivate it using the command below in */services/speedtest* directory.

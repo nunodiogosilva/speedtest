@@ -27,15 +27,15 @@ class Utils:
             subprocess.check_output(command)
             return True
 
-        except subprocess.CalledProcessError:
+        except (subprocess.CalledProcessError, FileNotFoundError):
             return False
-    
+
     @staticmethod
     def get_terminal_output(command: list):
         try:
             return subprocess.check_output(command, text=True)
 
-        except subprocess.CalledProcessError:
+        except (subprocess.CalledProcessError, FileNotFoundError):
             return False
 
     @staticmethod
@@ -44,5 +44,5 @@ class Utils:
             subprocess.check_call(command)
             return True
 
-        except subprocess.CalledProcessError:
+        except (subprocess.CalledProcessError, FileNotFoundError):
             return False
