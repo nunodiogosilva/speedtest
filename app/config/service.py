@@ -52,55 +52,43 @@ WantedBy=multi-user.target
                             print(
                                 f"Successfully restarted {Service.DESCRIPTION} Systemd service.")
 
-                    print(f"{Service.DESCRIPTION} Systemd service is already installed.")
+                    print(f"{Service.DESCRIPTION} Systemd service is already configured.")
                 else:
-                    is_installed = True
-                    print(f"\nChanging {Service.DESCRIPTION} Systemd service configuration file ownership...")
-                    if not Utils.has_terminal_output(["sudo", "chown", "-R", f"{Utils.username()}:root", Service.CONFIGURATION_FILE]):
-                        print(f"Unable to change {Service.DESCRIPTION} Systemd service configuration file ownership.")
-                    else:
-                        print(f"Successfully changed {Service.DESCRIPTION} Systemd service configuration file ownership.")
+                    is_configured = True
+                    print(f"\nUpdating {Service.DESCRIPTION} Systemd service configuration file...")
+                    Utils.update_file(Service.CONFIGURATION_FILE,
+                                    Service.CONFIGURATION, "w")
+                    print(f"Successfully updated {Service.DESCRIPTION} Systemd service configuration file.")
 
-                        print(f"\nUpdating {Service.DESCRIPTION} Systemd service configuration file...")
-                        Utils.update_file(Service.CONFIGURATION_FILE,
-                                        Service.CONFIGURATION, "w")
-                        print(f"Successfully updated {Service.DESCRIPTION} Systemd service configuration file.")
-                        
-                        print(f"\nChanging {Service.DESCRIPTION} Systemd service configuration file ownership...")
-                        if not Utils.has_terminal_output(["sudo", "chown", "-R", f"{Utils.username()}:root", Service.CONFIGURATION_FILE]):
-                            print(f"Unable to change {Service.DESCRIPTION} Systemd service configuration file ownership.")
+                    print("\nReloading Systemd files...")
+                    if not Utils.has_terminal_output(["sudo", "systemctl", "daemon-reload"]):
+                        print("Unable to reload Systemd files.")
+                        is_configured = False
+                    else:
+                        print("Successfully reloaded Systemd files.")
+
+                        print(f"\nEnabling {Service.DESCRIPTION} Systemd service...")
+                        if not Utils.has_terminal_output(["sudo", "systemctl", "enable", f"{Service.NAME}.service"]):
+                            is_configured = False
+                            print(
+                                f"Unable to enable {Service.DESCRIPTION} Systemd service.")
                         else:
-                            print(f"Successfully changed {Service.DESCRIPTION} Systemd service configuration file ownership.")
+                            print(
+                                f"Successfully enabled {Service.DESCRIPTION} Systemd service.")
 
-                            print("\nReloading Systemd files...")
-                            if not Utils.has_terminal_output(["sudo", "systemctl", "daemon-reload"]):
-                                print("Unable to reload Systemd files.")
-                                is_installed = False
+                            print(
+                                f"\nStarting {Service.DESCRIPTION} Systemd service...")
+                            if not Utils.has_terminal_output(["sudo", "systemctl", "start", f"{Service.NAME}.service"]):
+                                is_configured = False
+                                print(
+                                    f"Unable to start {Service.DESCRIPTION} Systemd service.")
                             else:
-                                print("Successfully reloaded Systemd files.")
+                                print(
+                                    f"Successfully started {Service.DESCRIPTION} Systemd service.")
 
-                                print(f"\nEnabling {Service.DESCRIPTION} Systemd service...")
-                                if not Utils.has_terminal_output(["sudo", "systemctl", "enable", f"{Service.NAME}.service"]):
-                                    is_installed = False
-                                    print(
-                                        f"Unable to enable {Service.DESCRIPTION} Systemd service.")
-                                else:
-                                    print(
-                                        f"Successfully enabled {Service.DESCRIPTION} Systemd service.")
-
-                                    print(
-                                        f"\nStarting {Service.DESCRIPTION} Systemd service...")
-                                    if not Utils.has_terminal_output(["sudo", "systemctl", "start", f"{Service.NAME}.service"]):
-                                        is_installed = False
-                                        print(
-                                            f"Unable to start {Service.DESCRIPTION} Systemd service.")
-                                    else:
-                                        print(
-                                            f"Successfully started {Service.DESCRIPTION} Systemd service.")
-
-                    if not is_installed:
+                    if not is_configured:
                         print(
-                            f"Unable to install {Service.DESCRIPTION} Systemd service.")
+                            f"Unable to configure {Service.DESCRIPTION} Systemd service.")
                     else:
                         print(
-                            f"Successfully installed {Service.DESCRIPTION} Systemd service.")
+                            f"Successfully configured {Service.DESCRIPTION} Systemd service.")

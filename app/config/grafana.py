@@ -17,64 +17,9 @@ class Grafana:
 
     @classmethod
     def setup(cls, is_deployment=False):
-        if not Utils.has_terminal_output(["sudo", "grafana-server", "--version"]):
-            print("\nInstalling prerequisite packages...")
-            if not Utils.has_terminal_input(["sudo", "apt-get", "install", "-y", "apt-transport-https", "software-properties-common", "wget"]):
-                print("Unable to install prerequisite packages.")
-            else:
-                print("Successfully installed prerequisite packages.")
-
-                print("\nCreating /etc/apt/keyrings/ directory...")
-                if not Utils.has_terminal_output(["sudo", "mkdir", "-p", "/etc/apt/keyrings/"]):
-                    print("Unable to create /etc/apt/keyrings/ directory.")
-                else:
-                    print("Successfully created /etc/apt/keyrings/ directory.")
-
-                    print("\nImporting GPG key...")
-                    if not Utils.has_terminal_output(["wget", "-q", "-O", "-", "https://apt.grafana.com/gpg.key", "|", "gpg ", "--dearmor", "|", "sudo", "tee", "/etc/apt/keyrings/grafana.gpg", ">", "/dev/null"]):
-                        print("Unable to import GPG key.")
-                    else:
-                        print("Successfully created /etc/apt/keyrings/ directory.")
-
-                        print("\nAdding stable releases repository...")
-                        if not Utils.has_terminal_output(["echo", '"deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main"', "|", "sudo", "tee", "-a", "/etc/apt/sources.list.d/grafana.list"]):
-                            print("Unable to add stable releases repository.")
-                        else:
-                            print("Successfully added stable releases repository.")
-
-                            print("\nUpdating packages...")
-                            if not Utils.has_terminal_input(["sudo", "apt-get", "update"]):
-                                print("Unable to update packages.")
-                            else:
-                                print("Successfully updated packages.")
-
-                                print("\nInstalling Grafana...")
-                                if not Utils.has_terminal_input(["sudo", "apt-get", "install", "grafana"]):
-                                    print("Unable to install Grafana.")
-                                else:
-                                    print("Successfully installed Grafana.")
-
-                                    print("\nEnabling Grafana...")
-                                    if not Utils.has_terminal_output(["sudo", "systemctl", "enable", "grafana-server"]):
-                                        print("Unable to enable Grafana.")
-                                    else:
-                                        print("Successfully enabled Grafana.")
-
-                                        print("\nStarting Grafana...")
-                                        if not Utils.has_terminal_output(["sudo", "systemctl", "start", "grafana-server"]):
-                                            print("Unable to start Grafana.")
-                                        else:
-                                            print("Successfully started Grafana.")
-
-                                            grafana = Grafana.connect()
-                                            Grafana.update_datasources(grafana)
-                                            Grafana.update_dashboards(grafana)
-        else:
-            print("Grafana is already installed.")
-
-            grafana = Grafana.connect()
-            Grafana.update_datasources(grafana)
-            Grafana.update_dashboards(grafana)
+        grafana = Grafana.connect()
+        Grafana.update_datasources(grafana)
+        Grafana.update_dashboards(grafana)
 
         if is_deployment:
             print("\nRestarting Grafana...")

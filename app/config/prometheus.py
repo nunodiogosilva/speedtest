@@ -49,47 +49,15 @@ scrape_configs:
 
     @classmethod
     def setup(cls, is_deployment=False):
-        if not Utils.has_terminal_output(["sudo", "prometheus", "--version"]):
-            is_installed = True
-            print("\nInstalling Prometheus...")
-            if not Utils.has_terminal_input(["sudo", "apt-get", "install", "prometheus", "-y"]):
-                is_installed = False
-            else:
-                print("\nCreating Prometheus configuration file...")
-                Utils.create_file(Prometheus.CONFIGURATION_FILE)
-                print("Successfully created Prometheus configuration file.")
+        print("\nCreating Prometheus configuration file...")
+        Utils.create_file(Prometheus.CONFIGURATION_FILE)
+        print("Successfully created Prometheus configuration file.")
 
-                print("\nChanging Prometheus configuration file ownership...")
-                if not Utils.has_terminal_output(["sudo", "chown", "-R", f"{Utils.username()}:root", Prometheus.CONFIGURATION_FILE]):
-                    print("Unable to change Prometheus configuration file ownership.")
-                else:
-                    print("Successfully changed Prometheus configuration file ownership.")
-
-                    print("\nUpdating Prometheus configuration file...")
-                    Utils.update_file(Prometheus.CONFIGURATION_FILE,
-                                    Prometheus.CONFIGURATION, "w")
-                    print("Successfully updated Prometheus configuration file.")
-
-                    print("\nEnabling Prometheus...")
-                    if not Utils.has_terminal_output(["sudo", "systemctl", "enable", "prometheus"]):
-                        is_installed = False
-                        print("Unable to enable Prometheus.")
-                    else:
-                        print("Successfully enabled Prometheus.")
-
-                        print("\nStarting Prometheus...")
-                        if not Utils.has_terminal_output(["sudo", "systemctl", "start", "prometheus"]):
-                            is_installed = False
-                            print("Unable to start Prometheus.")
-                        else:
-                            print("Successfully started Prometheus.")
-
-            if not is_installed:
-                print("Unable to install Prometheus.")
-            else:
-                print("Successfully installed Prometheus.")
+        print("\nChanging Prometheus configuration file ownership...")
+        if not Utils.has_terminal_output(["sudo", "chown", "-R", f"{Utils.username()}:root", Prometheus.CONFIGURATION_FILE]):
+            print("Unable to change Prometheus configuration file ownership.")
         else:
-            print("Prometheus is already installed.")
+            print("Successfully changed Prometheus configuration file ownership.")
 
             with open(Prometheus.CONFIGURATION_FILE, "r", encoding="utf-8") as file:
                 content = file.read()
@@ -104,23 +72,17 @@ scrape_configs:
                     print("Prometheus is already configured.")
                 else:
                     is_configured = True
-                    print("\nChanging Prometheus configuration file ownership...")
-                    if not Utils.has_terminal_output(["sudo", "chown", "-R", f"{Utils.username()}:root", Prometheus.CONFIGURATION_FILE]):
-                        is_configured = False
-                        print("Unable to change Prometheus configuration file ownership.")
-                    else:
-                        print("Successfully changed Prometheus configuration file ownership.")
-                        print("\nUpdating Prometheus configuration file...")
-                        Utils.update_file(Prometheus.CONFIGURATION_FILE,
-                                        Prometheus.CONFIGURATION, "w")
-                        print("Successfully updated Prometheus configuration file.")
+                    print("\nUpdating Prometheus configuration file...")
+                    Utils.update_file(Prometheus.CONFIGURATION_FILE,
+                                    Prometheus.CONFIGURATION, "w")
+                    print("Successfully updated Prometheus configuration file.")
 
-                        print("\nRestarting Prometheus...")
-                        if not Utils.has_terminal_output(["sudo", "systemctl", "restart", "prometheus"]):
-                            is_configured = False
-                            print("Unable to restart Prometheus.")
-                        else:
-                            print("Successfully restarted Prometheus.")
+                    print("\nRestarting Prometheus...")
+                    if not Utils.has_terminal_output(["sudo", "systemctl", "restart", "prometheus"]):
+                        is_configured = False
+                        print("Unable to restart Prometheus.")
+                    else:
+                        print("Successfully restarted Prometheus.")
 
                     if not is_configured:
                         print("Unable to configure Prometheus.")
