@@ -31,13 +31,13 @@ class Grafana:
                     print("Successfully created /etc/apt/keyrings/ directory.")
 
                     print("\nImporting GPG key...")
-                    if not Utils.has_terminal_output(["sudo", "wget", "-q", "-O", "-", "https://apt.grafana.com/gpg.key", "|", "gpg --dearmor", "|", "sudo", "tee", "/etc/apt/keyrings/grafana.gpg", ">", "/dev/null"]):
+                    if not Utils.has_terminal_output(["wget", "-q", "-O", "-", "https://apt.grafana.com/gpg.key", "|", "gpg ", "--dearmor", "|", "sudo", "tee", "/etc/apt/keyrings/grafana.gpg", ">", "/dev/null"]):
                         print("Unable to import GPG key.")
                     else:
                         print("Successfully created /etc/apt/keyrings/ directory.")
 
                         print("\nAdding stable releases repository...")
-                        if not Utils.has_terminal_output(["sudo", "echo", '"deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main"', "|", "sudo", "tee", "-a", "/etc/apt/sources.list.d/grafana.list"]):
+                        if not Utils.has_terminal_output(["echo", '"deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main"', "|", "sudo", "tee", "-a", "/etc/apt/sources.list.d/grafana.list"]):
                             print("Unable to add stable releases repository.")
                         else:
                             print("Successfully added stable releases repository.")
