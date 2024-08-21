@@ -15,6 +15,11 @@ TODO
 sudo mkdir /scripts && cd /scripts
 ```
 
+* Change the ownership of */scripts* directory to your user, you may use the command below. Make sure to replace <username> with your username.
+```bash
+sudo chown -R <username>:root /scripts
+```
+
 * Clone [Speedtest Service](https://github.com/nunodiogosilva/speedtest.git) GitHub repository into */scripts* directory.
 ```bash
 sudo git clone https://github.com/nunodiogosilva/speedtest.git && cd speedtest

@@ -1,6 +1,5 @@
 from app.common.utils import Utils
 from app.config.paths import Paths
-from app.config.python import Python
 
 
 class Service:
@@ -21,7 +20,7 @@ After=network.target
 [Service]
 EnvironmentFile={Paths.ENVIRONMENT_FILE}
 WorkingDirectory={Paths.PROJECT_DIRECTORY}
-ExecStart={Paths.BASH_INTERPRETER_FILE} -c "cd {Paths.PROJECT_DIRECTORY} && {Python.INTERPRETER_FILE} -m app.run"
+ExecStart={Paths.BASH_INTERPRETER_FILE} -c "cd {Paths.PROJECT_DIRECTORY} && {Paths.PYTHON_INTERPRETER_FILE} -m app.run"
 Restart=always
 
 [Install]
