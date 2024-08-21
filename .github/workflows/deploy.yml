@@ -1,0 +1,17 @@
+name: Deploy to Raspberry Pi
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Run deployment script
+      run: cd /services/speedtest && python3.11 -m app.deploy
