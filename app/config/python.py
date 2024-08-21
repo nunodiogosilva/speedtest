@@ -31,9 +31,9 @@ class Python:
 
     @classmethod
     def setup_pip(cls):
-        if not Utils.has_terminal_output(["sudo", Python.VERSION, "-m", "pip", "--version"]):
+        if not Utils.has_terminal_output([Python.PIP_VERSION, "--version"]):
             print("Installing Python pip package...")
-            if not Utils.has_terminal_input(["sudo", Python.VERSION, "-m", "ensurepip", "--upgrade"]):
+            if not Utils.has_terminal_input(["sudo", "apt-get", "install", f"{Python.VERSION}-pip"]):
                 print("Unable to install Python pip package.")
             else:
                 print("Successfully installed Python pip package.")
@@ -44,7 +44,7 @@ class Python:
                                 for line in file.readlines()]
 
             installed_packages = Utils.get_terminal_output(
-                ["sudo", Python.PIP_VERSION, "freeze"]
+                [Python.PIP_VERSION, "freeze"]
             ).splitlines()
 
             missing_packages = [
@@ -54,7 +54,7 @@ class Python:
                 print("Required Python packages are already installed.")
             else:
                 print("Installing required Python packages...")
-                if not Utils.has_terminal_input(["sudo", Python.PIP_VERSION, "install", "-r", Python.PIP_REQUIREMENTS_FILE]):
+                if not Utils.has_terminal_input([Python.PIP_VERSION, "install", "-r", Python.PIP_REQUIREMENTS_FILE]):
                     print("Unable to install required Python packages.")
                 else:
                     print("Successfully installed required Python packages.")
