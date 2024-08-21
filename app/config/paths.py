@@ -4,7 +4,7 @@ class Paths:
 
     BASH_INTERPRETER_FILE = "/usr/bin/sh"
 
-    PROJECT_DIRECTORY = "/services/speedtest"
+    PROJECT_DIRECTORY = "/scripts/speedtest"
 
     ERRORS_DIRECTORY = f"{PROJECT_DIRECTORY}/errors"
 

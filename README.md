@@ -10,62 +10,62 @@ TODO
 * A Raspberry Pi is a small, affordable, single-board computer. Developed by the [Raspberry Pi Foundation](https://www.raspberrypi.org/), it has gained widespread popularity for its versatility and low cost. A Raspberry Pi is a popular choice for running Prometheus and Grafana projects, especially for small-scale or home-based monitoring setups. In order to configure our Raspberry Pi, we may refer to [Getting started](https://www.raspberrypi.com/documentation/computers/getting-started.html#getting-started-with-your-raspberry-pi) Raspberry Pi official documentation. In Speedtest Service case we've used a Raspberry Pi 3 Model B with Raspberry Pi OS Lite (64-bit) operating system and a SD card with 32GB of storage.
 
 ### Clone GitHub Repository
-* Create */services* directory.
+* Create */scripts* directory.
 ```bash
-cd / && mkdir services && cd services
+sudo mkdir /scripts && cd /scripts
 ```
 
-* Clone [Speedtest Service](https://github.com/nunodiogosilva/speedtest.git) GitHub repository into */services* directory.
+* Clone [Speedtest Service](https://github.com/nunodiogosilva/speedtest.git) GitHub repository into */scripts* directory.
 ```bash
-sudo git clone https://github.com/nunodiogosilva/speedtest.git
+sudo git clone https://github.com/nunodiogosilva/speedtest.git && cd speedtest
+```
+
+### Create Virtual Environment
+* Python virutal environments isolate dependencies for projects, allowing different projects to use different packages and versions without conflicts. They ensure clean, independent setups. To create a virtual environment, run the command below in */scripts/speedtest* directory. This will create a new virtual environment in a local folder named *.venv*
+```bash
+sudo python3.11 -m venv .venv
+```
+
+* Before you can start installing or using packages in your virtual environment you'll need to activate it in */scripts/speedtest* directory. Activating a virtual environment will put the virtual environment specific Python and pip executables into your terminal.
+```bash
+source .venv/bin/activate
+```
+
+* If you want to switch projects or leave your virtual environment, you may deactivate it using the command below in */scripts/speedtest* directory.
+```bash
+deactivate
+```
+
+* You may refer to [Python Packaging Official Documentation](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) for additional information about Python virtual environments.
+
+### Python PIP Requirements
+* Run the command below in */scripts/speedtest* directory where *requirements.txt* file is located. This command will read *requirements.txt* file and install all the specified packages and their dependencies.
+```bash
+pip3.11 install -r requirements.txt
+```
+
+* Alternatively, if you've installed a new Python package that it's not in *requirements.txt* file, you may use the command below in */scripts/speedtest* directory to list all the packages installed and their versions. You then redirect the output to *requirements.txt* file.
+```bash
+pip3.11 freeze > requirements.txt
+```
+
+* If you want to start fresh but you don't want to delete the virtual environment that you've created, you may uninstall all Python packages running the command below in */scripts/speedtest* directory.
+```bash
+pip3.11 freeze | xargs pip3.11 uninstall -y
+```
+
+* To get the most up to date packages versions and upgrade them automatically we may use *pip-review* package which lists available updates and it can also automatically or interactively install available updates. Run the command below in */scripts/speedtest* directory. You may refer to [PyPI Official Documentation](https://pypi.org/project/pip-review/) for additional information about *pip-review* Python package.
+```bash
+pip-review --interactive
 ```
 
 ### Speedtest Service Setup
-* In order to setup Speedtest Service on your Raspberry Pi, you may set it up automatically or manually. To do it automatically you may use the command below in */services/speedtest* directory.
+* In order to setup Speedtest Service on your Raspberry Pi, you may set it up automatically or manually. To do it automatically you may use the command below in */scripts/speedtest* directory.
 ```bash
 sudo python3.11 -m app.setup
 ```
 
 * If you want to setup Speedtest Service manually, you may follow the steps below.
-  #### 1. Create Virtual Environment
-  * Python virutal environments isolate dependencies for projects, allowing different projects to use different packages and versions without conflicts. They ensure clean, independent setups. To create a virtual environment, run the command below in */services/speedtest* directory. This will create a new virtual environment in a local folder named *.venv*
-  ```bash
-  sudo python3.11 -m venv .venv
-  ```
-
-  * Before you can start installing or using packages in your virtual environment you'll need to activate it in */services/speedtest* directory. Activating a virtual environment will put the virtual environment specific Python and pip executables into your terminal.
-  ```bash
-  source .venv/bin/activate
-  ```
-
-  * If you want to switch projects or leave your virtual environment, you may deactivate it using the command below in */services/speedtest* directory.
-  ```bash
-  deactivate
-  ```
-
-  * You may refer to [Python Packaging Official Documentation](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) for additional information about Python virtual environments.
-
-  #### 2. Python PIP Requirements
-  * Run the command below in */services/speedtest* directory where *requirements.txt* file is located. This command will read *requirements.txt* file and install all the specified packages and their dependencies.
-  ```bash
-  pip3.11 install -r requirements.txt
-  ```
-
-  * Alternatively, if you've installed a new Python package that it's not in *requirements.txt* file, you may use the command below in */services/speedtest* directory to list all the packages installed and their versions. You then redirect the output to *requirements.txt* file.
-  ```bash
-  pip3.11 freeze > requirements.txt
-  ```
-
-  * If you want to start fresh but you don't want to delete the virtual environment that you've created, you may uninstall all Python packages running the command below in */services/speedtest* directory.
-  ```bash
-  pip3.11 freeze | xargs pip3.11 uninstall -y
-  ```
-
-  * To get the most up to date packages versions and upgrade them automatically we may use *pip-review* package which lists available updates and it can also automatically or interactively install available updates. Run the command below in */services/speedtest* directory. You may refer to [PyPI Official Documentation](https://pypi.org/project/pip-review/) for additional information about *pip-review* Python package.
-  ```bash
-  pip-review --interactive
-  ```
-
   #### 3. Prometheus
   * Prometheus is an open-source monitoring and alerting toolkit designed for reliability and scalability. Prometheus stores all metrics data as time series and will be used has a datasource. In order to install Prometheus in our Raspberry Pi, we may use the commands below. **If you're using a different operating system please refer to [Download](https://prometheus.io/download/) Prometheus official documentation to find the right operating system.**
   ```bash
@@ -174,8 +174,8 @@ sudo python3.11 -m app.setup
 
   [Service]
   EnvironmentFile=/etc/environment
-  WorkingDirectory=/services/speedtest
-  ExecStart=/usr/bin/sh -c "cd /services/speedtest && /usr/bin/python3.11 -m app.run"
+  WorkingDirectory=/scripts/speedtest
+  ExecStart=/usr/bin/sh -c "cd /scripts/speedtest && /usr/bin/python3.11 -m app.run"
   Restart=always
 
   [Install]
