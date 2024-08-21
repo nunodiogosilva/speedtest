@@ -52,7 +52,7 @@ scrape_configs:
     @classmethod
     def setup(cls, is_deployment=False):
         print("\nChanging Prometheus configuration file ownership...")
-        if not Utils.has_terminal_output(["sudo", "chmod", "+x", Prometheus.CONFIGURATION_DIRECTORY]):
+        if not Utils.has_terminal_output(["sudo", "chown", "-R", f"{Utils.username()}:root", Prometheus.CONFIGURATION_DIRECTORY]):
             print("Unable to change Prometheus configuration file ownership.")
         else:
             print("Successfully changed Prometheus configuration file ownership.")

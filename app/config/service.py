@@ -31,7 +31,7 @@ WantedBy=multi-user.target
     def setup(cls, is_deployment=False):
         print(
             f"\nChanging {Service.DESCRIPTION} Systemd service configuration file ownership...")
-        if not Utils.has_terminal_output(["sudo", "chmod", "+x", Service.CONFIGURATION_DIRECTORY]):
+        if not Utils.has_terminal_output(["sudo", "chown", "-R", f"{Utils.username()}:root", Service.CONFIGURATION_DIRECTORY]):
             print(
                 f"Unable to change {Service.DESCRIPTION} Systemd service configuration file ownership.")
         else:
