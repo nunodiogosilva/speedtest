@@ -20,24 +20,6 @@ cd / && mkdir services && cd services
 sudo git clone https://github.com/nunodiogosilva/speedtest.git
 ```
 
-### Create Virtual Environment
-* Python virutal environments isolate dependencies for projects, allowing different projects to use different packages and versions without conflicts. They ensure clean, independent setups. To create a virtual environment, run the command below in */services/speedtest* directory. This will create a new virtual environment in a local folder named *.venv*
-```bash
-sudo python3.11 -m venv .venv
-```
-
-* Before you can start installing or using packages in your virtual environment you'll need to activate it in */services/speedtest* directory. Activating a virtual environment will put the virtual environment specific Python and pip executables into your terminal.
-```bash
-sudo source .venv/bin/activate
-```
-
-* If you want to switch projects or leave your virtual environment, you may deactivate it using the command below in */services/speedtest* directory.
-```bash
-deactivate
-```
-
-* You may refer to [Python Packaging Official Documentation](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) for additional information about Python virtual environments.
-
 ### Speedtest Service Setup
 * In order to setup Speedtest Service on your Raspberry Pi, you may set it up automatically or manually. To do it automatically you may use the command below in */services/speedtest* directory.
 ```bash
@@ -45,7 +27,46 @@ sudo python3.11 -m app.setup
 ```
 
 * If you want to setup Speedtest Service manually, you may follow the steps below.
-  #### 1. Prometheus
+  #### 1. Create Virtual Environment
+  * Python virutal environments isolate dependencies for projects, allowing different projects to use different packages and versions without conflicts. They ensure clean, independent setups. To create a virtual environment, run the command below in */services/speedtest* directory. This will create a new virtual environment in a local folder named *.venv*
+  ```bash
+  sudo python3.11 -m venv .venv
+  ```
+
+  * Before you can start installing or using packages in your virtual environment you'll need to activate it in */services/speedtest* directory. Activating a virtual environment will put the virtual environment specific Python and pip executables into your terminal.
+  ```bash
+  source .venv/bin/activate
+  ```
+
+  * If you want to switch projects or leave your virtual environment, you may deactivate it using the command below in */services/speedtest* directory.
+  ```bash
+  deactivate
+  ```
+
+  * You may refer to [Python Packaging Official Documentation](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) for additional information about Python virtual environments.
+
+  #### 2. Python PIP Requirements
+  * Run the command below in */services/speedtest* directory where *requirements.txt* file is located. This command will read *requirements.txt* file and install all the specified packages and their dependencies.
+  ```bash
+  pip3.11 install -r requirements.txt
+  ```
+
+  * Alternatively, if you've installed a new Python package that it's not in *requirements.txt* file, you may use the command below in */services/speedtest* directory to list all the packages installed and their versions. You then redirect the output to *requirements.txt* file.
+  ```bash
+  pip3.11 freeze > requirements.txt
+  ```
+
+  * If you want to start fresh but you don't want to delete the virtual environment that you've created, you may uninstall all Python packages running the command below in */services/speedtest* directory.
+  ```bash
+  pip3.11 freeze | xargs pip3.11 uninstall -y
+  ```
+
+  * To get the most up to date packages versions and upgrade them automatically we may use *pip-review* package which lists available updates and it can also automatically or interactively install available updates. Run the command below in */services/speedtest* directory. You may refer to [PyPI Official Documentation](https://pypi.org/project/pip-review/) for additional information about *pip-review* Python package.
+  ```bash
+  pip-review --interactive
+  ```
+
+  #### 3. Prometheus
   * Prometheus is an open-source monitoring and alerting toolkit designed for reliability and scalability. Prometheus stores all metrics data as time series and will be used has a datasource. In order to install Prometheus in our Raspberry Pi, we may use the commands below. **If you're using a different operating system please refer to [Download](https://prometheus.io/download/) Prometheus official documentation to find the right operating system.**
   ```bash
   sudo apt-get install prometheus
@@ -98,7 +119,7 @@ sudo python3.11 -m app.setup
 
   * You can access the Prometheus web UI at [localhost:9090](http://localhost:9090).
 
-  #### 2. Grafana
+  #### 4. Grafana
   * Grafana is an open-source platform for monitoring and observability, which allows users to visualize, analyze, and understand metrics, logs, and traces collected from various sources in real-time. Grafana will be used to visualize Prometheus datasource metrics. In order to install Grafana in our Raspberry Pi, we may use the commands below. **If you're using a different operating system please refer to [Install Grafana](https://grafana.com/docs/grafana/latest/setup-grafana/installation/) official documentation to find the right operating system.**
   ```bash
   sudo apt-get install -y apt-transport-https software-properties-common wget
@@ -138,28 +159,7 @@ sudo python3.11 -m app.setup
 
   * You can access the Grafana web UI at [localhost:3000](http://localhost:3000).
 
-  #### 3. Python PIP Requirements
-  * Run the command below in */services/speedtest* directory where *requirements.txt* file is located. This command will read *requirements.txt* file and install all the specified packages and their dependencies.
-  ```bash
-  pip3.11 install -r requirements.txt
-  ```
-
-  * Alternatively, if you've installed a new Python package that it's not in *requirements.txt* file, you may use the command below in */services/speedtest* directory to list all the packages installed and their versions. You then redirect the output to *requirements.txt* file.
-  ```bash
-  pip3.11 freeze > requirements.txt
-  ```
-
-  * If you want to start fresh but you don't want to delete the virtual environment that you've created, you may uninstall all Python packages running the command below in */services/speedtest* directory.
-  ```bash
-  pip3.11 freeze | xargs pip3.11 uninstall -y
-  ```
-
-  * To get the most up to date packages versions and upgrade them automatically we may use *pip-review* package which lists available updates and it can also automatically or interactively install available updates. Run the command below in */services/speedtest* directory. You may refer to [PyPI Official Documentation](https://pypi.org/project/pip-review/) for additional information about *pip-review* Python package.
-  ```bash
-  pip-review --interactive
-  ```
-
-  #### 4. Systemd Service
+  #### 5. Systemd Service
   * A Systemd service is a system unit managed by Systemd init system in Linux. It allows to define and control the behavior of a application, such as starting it at boot, stopping it, restarting it and checking it status. Let's now create a new Systemd service for Speedtest Service using the commands below.
   ```bash
   sudo touch /etc/systemd/system/speedtest.service
@@ -203,7 +203,7 @@ sudo python3.11 -m app.setup
 | <img src="assets/images/vscode.png" alt="vscode" width="50" height="auto">                   | [Visual Studio Code](https://code.visualstudio.com/)                   | Code Editor      |
 | <img src="assets/images/git.png" alt="git" width="50" height="auto">                         | [Git](https://git-scm.com/)                                            | Version Control  |
 | <img src="assets/images/github.png" alt="github" width="50" height="auto">                   | [GitHub](https://github.com/)                                          | Code Repository  |
-| <img src="assets/images/github_actions.png" alt="github_actions" width="50" height="auto">   | [GitHub Actions](hhttps://github.com/features/actions)                 | CI/CD            |
+| <img src="assets/images/github_actions.png" alt="github_actions" width="50" height="auto">   | [GitHub Actions](https://github.com/features/actions)                  | CI/CD            |
 | <img src="assets/images/raspberry_pi.png" alt="raspberry_pi" width="50" height="auto">       | [Raspberry Pi OS Lite (64-bit)](https://www.raspberrypi.com/software/) | Operating System |
 | <img src="assets/images/systemd.png" alt="systemd" width="80" height="auto">                 | [Systemd](https://systemd.io/)                                         | Service          |
 | <img src="assets/images/python.png" alt="python" width="50" height="auto">                   | [Python (3.11)](https://www.python.org/)                               | Scripting        |

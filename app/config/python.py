@@ -31,30 +31,31 @@ class Python:
 
     @classmethod
     def setup_pip(cls):
-        if not Utils.has_terminal_output([Python.PIP_VERSION, "--version"]):
-            print("Installing Python pip package...")
-            if not Utils.has_terminal_input(["sudo", "apt-get", "install", f"{Python.VERSION}-pip"]):
-                print("Unable to install Python pip package.")
-            else:
-                print("Successfully installed Python pip package.")
+        print("Creating a Python virtual environment...")
+        if not Utils.has_terminal_output(["sudo", Python.VERSION, "-m", "venv", ".venv"]):
+            print("Unable to create a Python virtual environment.")
         else:
-            requirements = []
-            with open(Python.PIP_REQUIREMENTS_FILE, "r", encoding="utf-8") as file:
-                requirements = [line.split("==")[0]
-                                for line in file.readlines()]
-
-            installed_packages = Utils.get_terminal_output(
-                [Python.PIP_VERSION, "freeze"]
-            ).splitlines()
-
-            missing_packages = [
-                requirement for requirement in requirements if requirement not in installed_packages]
-
-            if not missing_packages:
-                print("Required Python packages are already installed.")
+            print("Activating Python virtual environemnt...")
+            if not Utils.has_terminal_output(["source", ".venv/bin/activate"]):
+                print("Unable to activate Python virtual environment.")
             else:
-                print("Installing required Python packages...")
-                if not Utils.has_terminal_input([Python.PIP_VERSION, "install", "-r", Python.PIP_REQUIREMENTS_FILE]):
-                    print("Unable to install required Python packages.")
+                requirements = []
+                with open(Python.PIP_REQUIREMENTS_FILE, "r", encoding="utf-8") as file:
+                    requirements = [line.split("==")[0]
+                                    for line in file.readlines()]
+
+                installed_packages = Utils.get_terminal_output(
+                    [Python.PIP_VERSION, "freeze"]
+                ).splitlines()
+
+                missing_packages = [
+                    requirement for requirement in requirements if requirement not in installed_packages]
+
+                if not missing_packages:
+                    print("Required Python packages are already installed.")
                 else:
-                    print("Successfully installed required Python packages.")
+                    print("Installing required Python packages...")
+                    if not Utils.has_terminal_input([Python.PIP_VERSION, "install", "-r", Python.PIP_REQUIREMENTS_FILE]):
+                        print("Unable to install required Python packages.")
+                    else:
+                        print("Successfully installed required Python packages.")
