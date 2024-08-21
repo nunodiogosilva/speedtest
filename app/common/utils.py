@@ -5,6 +5,10 @@ import subprocess
 class Utils:
 
     @staticmethod
+    def username():
+        return os.getlogin()
+
+    @staticmethod
     def create_file(file, content="", permission=None):
         if not os.path.exists(file):
             with open(file, "w", encoding="utf-8") as created_file:

@@ -48,13 +48,16 @@ class Grafana:
                                         print("Starting Grafana...")
                                         if not Utils.has_terminal_output(["sudo", "systemctl", "start", "grafana-server"]):
                                             print("Unable to start Grafana.")
-
+                                        else:
+                                            grafana = Grafana.connect()
+                                            Grafana.update_datasources(grafana)
+                                            Grafana.update_dashboards(grafana)
         else:
             print("Grafana is already installed.")
 
-        grafana = Grafana.connect()
-        Grafana.update_datasources(grafana)
-        Grafana.update_dashboards(grafana)
+            grafana = Grafana.connect()
+            Grafana.update_datasources(grafana)
+            Grafana.update_dashboards(grafana)
 
         if is_deployment:
             print("Restarting Grafana...")
