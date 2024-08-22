@@ -17,16 +17,16 @@ class Grafana:
 
     @classmethod
     def setup(cls, is_deployment=False):
-        grafana = Grafana.connect()
-        datasource = Grafana.update_datasources(grafana)
-        Grafana.update_dashboards(grafana, datasource)
-
         if is_deployment:
             print("\nRestarting Grafana...")
             if not Utils.has_terminal_output(["sudo", "systemctl", "restart", "grafana-server"]):
                 print("Unable to restart Grafana.")
             else:
                 print("Successfully restarted Grafana.")
+        else:
+            grafana = Grafana.connect()
+            datasource = Grafana.update_datasources(grafana)
+            Grafana.update_dashboards(grafana, datasource)
 
     @classmethod
     def connect(cls):
