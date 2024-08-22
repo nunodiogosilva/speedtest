@@ -231,7 +231,7 @@ TODO (Add prerequisites info)
 
   * In order to configure your self-hosted runner application to be a service and ensure that it starts on boot, we need to stop the self-hosted runner application if it is currently running. **If you're using a different operating system please refer to [Run the runner app as a service](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/configuring-the-self-hosted-runner-application-as-a-service) GitHub Actions official documentation to find the installation and configuration steps for your operating system.**
 
-  * In order to install a self-hosted runner in our Raspberry Pi, we may use the commands below.
+  * In order to install a self-hosted runner as a service in our Raspberry Pi, we may use the commands below.
   ```bash
   sudo ./svc.sh install
   ```

@@ -6,7 +6,11 @@ class Utils:
 
     @staticmethod
     def username():
-        return os.getlogin()
+        try:
+            return os.getlogin()
+
+        except OSError:
+            return "pi"
 
     @staticmethod
     def create_file(file, content="", permission=None):
