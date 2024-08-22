@@ -225,12 +225,29 @@ TODO (Add prerequisites info)
     ```
 
   ### 7. (Optional) GitHub Actions
-  TODO (Add GitHub Actions info)
+  GitHub Actions is a powerful automation platform integrated into GitHub that allows you to create, manage, and execute custom workflows directly within your GitHub repositories. It is most commonly used for continuous integration (CI) and continuous delivery (CD), enabling developers to automatically build, test, and deploy their code whenever changes are made.
 
-  * TODO (Add GitHub Actions Runner installation steps)
+  * To add a self-hosted runner, go to your GitHub repository or organization settings. Select Settings > Actions > Runners > Add Runner. Follow the instructions to download and configure the runner on your system. When installing your self-hosted runner be sure to **leave name of the runner group leave as *default***, that the **name of runner will be *speedtest***, to **leave runner labels as *default*** and that the **name of the work folder will be *speedtest***. **If you're using a different operating system please refer to [Add self-hosted runners](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/adding-self-hosted-runners) GitHub Actions official documentation to find the installation and configuration steps for your operating system.**
 
-## Speedtest Service Flowchart
-![speedtest_flowchart](assets/images/speedtest_flowchart.png)
+  * In order to configure your self-hosted runner application to be a service and ensure that it starts on boot, we need to stop the self-hosted runner application if it is currently running. **If you're using a different operating system please refer to [Run the runner app as a service](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/configuring-the-self-hosted-runner-application-as-a-service) GitHub Actions official documentation to find the installation and configuration steps for your operating system.**
+
+  * In order to install a self-hosted runner in our Raspberry Pi, we may use the commands below.
+  ```bash
+  sudo ./svc.sh install
+  ```
+
+  * Start self-hosted runner service.
+  ```bash
+  sudo ./svc.sh start
+  ```
+
+  * (Optional) To verify that the self-hosted runner service is running, we may run the command below.
+  ```bash
+  sudo ./svc.sh status
+  ```
+
+## Speedtest Service CI/CD Flowchart
+![speedtest_cicd_flowchart](assets/images/speedtest_cicd_flowchart.png)
 
 ## Tools
 |                                                                                              | Name                                                                   | Purpose          |
@@ -247,10 +264,11 @@ TODO (Add prerequisites info)
 | <img src="assets/images/grafana.png" alt="grafana" width="50" height="auto">                 | [Grafana](https://grafana.com/)                                        | Analyze Metrics  |
 
 ## Supported OS
-|                                                                          | Name  |
-|--------------------------------------------------------------------------|-------|
-| <img src="assets/images/linux.png" alt="linux" width="50" height="auto"> | Linux |
-| <img src="assets/images/macos.png" alt="macos" width="50" height="auto"> | macOS |
+|                                                                              | Name    |
+|------------------------------------------------------------------------------|---------|
+| <img src="assets/images/linux.png" alt="linux" width="50" height="auto">     | Linux   |
+| <img src="assets/images/macos.png" alt="macos" width="50" height="auto">     | macOS   |
+<!-- | <img src="assets/images/windows.png" alt="windows" width="50" height="auto"> | Windows | -->
 
 ## Authors & Maintainers
 | Name       | LinkedIn                                                                      | Role   |
