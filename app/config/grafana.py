@@ -19,8 +19,7 @@ class Grafana:
     def setup(cls, is_deployment=False):
         grafana = Grafana.connect()
         datasource = Grafana.update_datasources(grafana)
-        print(datasource)
-        # Grafana.update_dashboards(grafana, datasource)
+        Grafana.update_dashboards(grafana, datasource)
 
         if is_deployment:
             print("\nRestarting Grafana...")
