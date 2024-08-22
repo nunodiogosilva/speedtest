@@ -57,10 +57,7 @@ scrape_configs:
         else:
             print("Successfully changed Prometheus configuration file ownership.")
 
-            print("\nCreating Prometheus configuration file...")
             Utils.create_file(Prometheus.CONFIGURATION_FILE)
-            print("Successfully created Prometheus configuration file.")
-
             with open(Prometheus.CONFIGURATION_FILE, "r", encoding="utf-8") as file:
                 content = file.read()
                 if content == Prometheus.CONFIGURATION:
@@ -71,7 +68,7 @@ scrape_configs:
                         else:
                             print("Successfully restarted Prometheus.")
 
-                    print("Prometheus is already configured.")
+                    print("\nPrometheus is already configured.")
                 else:
                     is_configured = True
                     print("\nUpdating Prometheus configuration file...")
@@ -87,9 +84,9 @@ scrape_configs:
                         print("Successfully restarted Prometheus.")
 
                     if not is_configured:
-                        print("Unable to configure Prometheus.")
+                        print("\nUnable to configure Prometheus.")
                     else:
-                        print("Successfully configured Prometheus.")
+                        print("\nSuccessfully configured Prometheus.")
 
     @classmethod
     def start_server(cls):

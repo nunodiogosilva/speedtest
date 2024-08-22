@@ -38,12 +38,7 @@ WantedBy=multi-user.target
             print(
                 f"Successfully changed {Service.DESCRIPTION} Systemd service configuration file ownership.")
 
-            print(
-                f"\nCreating {Service.DESCRIPTION} Systemd service configuration file...")
             Utils.create_file(Service.CONFIGURATION_FILE)
-            print(
-                f"Successfully created {Service.DESCRIPTION} Systemd service configuration file.")
-
             with open(Service.CONFIGURATION_FILE, "r", encoding="utf-8") as file:
                 content = file.read()
                 if content == Service.CONFIGURATION:
@@ -58,7 +53,7 @@ WantedBy=multi-user.target
                                 f"Successfully restarted {Service.DESCRIPTION} Systemd service.")
 
                     print(
-                        f"{Service.DESCRIPTION} Systemd service is already configured.")
+                        f"\n{Service.DESCRIPTION} Systemd service is already configured.")
                 else:
                     is_configured = True
                     print(
@@ -97,7 +92,7 @@ WantedBy=multi-user.target
 
                     if not is_configured:
                         print(
-                            f"Unable to configure {Service.DESCRIPTION} Systemd service.")
+                            f"\nUnable to configure {Service.DESCRIPTION} Systemd service.")
                     else:
                         print(
-                            f"Successfully configured {Service.DESCRIPTION} Systemd service.")
+                            f"\nSuccessfully configured {Service.DESCRIPTION} Systemd service.")
