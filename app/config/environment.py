@@ -18,13 +18,13 @@ class Environment:
     def setup(cls):
         load_dotenv()
         print("\nConfiguring Environment variables...")
+        Utils.create_file(Environment.CONFIGURATION_FILE)
         for variable in Environment.VARIABLES:
             if not os.getenv(variable):
-                Utils.create_file(Environment.CONFIGURATION_FILE)
                 value = getpass.getpass(
                     f"Enter {variable} Environment variable value:\n> ")
                 content = f'{variable}="{value}"\n'
-                Utils.update_file(Environment.CONFIGURATION_FILE, content, "w")
+                Utils.update_file(Environment.CONFIGURATION_FILE, content, "a")
 
             else:
                 print(
