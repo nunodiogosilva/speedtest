@@ -1,4 +1,5 @@
 import os
+import re
 import json
 from dotenv import load_dotenv
 from grafana_api.grafana_face import GrafanaFace
@@ -17,16 +18,25 @@ class Grafana:
 
     CONFIGURATION_FILE = f"{CONFIGURATION_DIRECTORY}/grafana.ini"
 
-    CONFIGURATION = [
+    CONFIGURATION_SECTIONS = [
         {
-            "section": "[auth.anonymous]",
-            "config": {
-                "enabled": "true",
-                "org_name": "Main Org.",
-                "org_role": "Viewer",
-                "hide_version": "true",
-                "device_limit": "3"
-            }
+            "section": "auth.anonymous",
+            "content": """
+# Enable anonymous access
+enabled = true
+
+# Organization name that should be used for unauthenticated users
+org_name = Main Org.
+
+# Role for unauthenticated users, other valid values are `Editor` and `Admin`
+org_role = Viewer
+
+# Hide the Grafana version text from the footer and help tooltip for unauthenticated users (default: false)
+hide_version = true
+
+# Setting this limits the number of anonymous devices in your instance. Any new anonymous devices added after the limit has been reached will be denied access.
+device_limit = 3
+"""
         }
     ]
 
@@ -48,94 +58,58 @@ class Grafana:
             print("Successfully restarted Grafana.")
 
     @classmethod
+    def update_section(cls, file, section, content):
+        # Read the existing content of the file
+        with open(file, "r", encoding="utf-8") as config_file:
+            config_file_content = config_file.read()
+
+        # Define the regex pattern to find the specified section and its content
+        pattern = re.compile(rf'\[{re.escape(section)}\][\s\S]*?(?=\[|\Z)', re.MULTILINE)
+        match = pattern.search(config_file_content)
+
+        # Format the new section content with proper section header
+        new_section = f'[{section}]\n{content.strip()}'
+
+        if match:
+            # Replace the existing section with the new content
+            updated_content = re.sub(
+                rf'\[{re.escape(section)}\][\s\S]*?(?=\[|\Z)',
+                new_section,
+                config_file_content,
+                flags=re.MULTILINE
+            )
+        else:
+            # Append the new section to the end of the file
+            updated_content = content + f'\n{new_section}'
+
+        # Write the updated content back to the file if there's a difference
+        if config_file_content != updated_content:
+            print(f"\nUpdating {section} section in Grafana configuration file...")
+            with open(file, "w", encoding="utf-8") as config_file:
+                config_file.write(updated_content)
+            print(f"Successfully updated {section} section in Grafana configuration file.")
+            return True
+        else:
+            print(f"[{section}] section in Grafana configuration file is already configured.")
+            return False
+
+    @classmethod
     def update_configuration(cls, is_deployment):
         print("\nChanging Grafana configuration file ownership...")
         if not Utils.has_terminal_output(["sudo", "chown", "-R", f"{Utils.os_username()}:root", Grafana.CONFIGURATION_DIRECTORY]):
             print("Unable to change Grafana configuration file ownership.")
         else:
             print("Successfully changed Grafana configuration file ownership.")
-            with open(Grafana.CONFIGURATION_FILE, "r", encoding="utf-8") as file:
-                lines = file.readlines()
 
-            updated_lines = []
-            sections = set()
-            section_updated = False
+            was_updated = False
+            for config_section in Grafana.CONFIGURATION_SECTIONS:
+                was_updated = Grafana.update_section(Grafana.CONFIGURATION_FILE, config_section["section"], config_section["content"])
 
-            section = None
-            in_section = False
-
-            for line in lines:
-                stripped_line = line.strip()
-
-                # Check if the line indicates a section header
-                if stripped_line.startswith("[") and stripped_line.endswith("]"):
-                    if in_section:
-                        # Process the section if we were previously in one
-                        if section == config['section']:
-                            # Check if there were any changes in the section
-                            if section_updated:
-                                # Add the updated section to the lines
-                                updated_lines.append(f"\n{section}\n")
-                                for key, value in config['config'].items():
-                                    updated_lines.append(
-                                        f"{key} = {value}\n")
-                            else:
-                                # Add the original section
-                                updated_lines.append(line)
-
-                    # Update the current section
-                    section = stripped_line
-                    in_section = False
-                    updated_lines.append(line)
-                    continue
-
-                # Check if we're in a section that needs updating
-                for config in Grafana.CONFIGURATION:
-                    if section == config['section']:
-                        in_section = True
-                        sections.add(section)
-                        keys_to_update = config['config']
-
-                        # Flag to check if any value has changed
-                        section_updated = False
-
-                        # Process key-value pairs within the section
-                        for key, value in keys_to_update.items():
-                            if stripped_line.startswith(key):
-                                # Compare existing value with the new value
-                                if stripped_line != f"{key} = {value}":
-                                    updated_lines.append(
-                                        f"{key} = {value}\n")
-                                    section_updated = True
-                                break
-                        else:
-                            updated_lines.append(line)
-                        break
-                else:
-                    # If not in a section that needs updating, just append the line
-                    if not in_section:
-                        updated_lines.append(line)
-
-            # Add any missing sections and key-value pairs
-            for config in Grafana.CONFIGURATION:
-                if config['section'] not in sections:
-                    updated_lines.append(f"\n{config['section']}\n")
-                    for key, value in config['config'].items():
-                        updated_lines.append(f"{key} = {value}\n")
-
-            # Write the updated lines back to the file if there were changes
-            if updated_lines != lines:
-                print("\nUpdating Grafana configuration file...")
-                with open(Grafana.CONFIGURATION_FILE, 'w', encoding="utf-8") as file:
-                    file.writelines(updated_lines)
-                print("Successfully updated Grafana configuration file.")
+            if was_updated:
                 Grafana.restart()
 
-            else:
-                print("\nGrafana is already configured.")
-
-                if is_deployment:
-                    Grafana.restart()
+            if is_deployment:
+                Grafana.restart()
 
     @classmethod
     def connect(cls):
