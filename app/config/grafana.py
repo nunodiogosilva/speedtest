@@ -17,25 +17,18 @@ class Grafana:
 
     CONFIGURATION_FILE = f"{CONFIGURATION_DIRECTORY}/grafana.ini"
 
-    CONFIGURATION = """
-#################################### Anonymous Auth ######################
-[auth.anonymous]
-# Enable anonymous access
-enabled = true
-
-# Organization name that should be used for unauthenticated users
-org_name = Main Org.
-
-# Role for unauthenticated users, other valid values are `Editor` and `Admin`
-org_role = Viewer
-
-# Hide the Grafana version text from the footer and help tooltip for unauthenticated users (default: false)
-hide_version = true
-
-# Setting this limits the number of anonymous devices in your instance. Any new anonymous devices added after the limit has been reached will be denied access.
-device_limit = 3
-
-"""
+    CONFIGURATION = [
+        {
+            "section": "[auth.anonymous]",
+            "config": {
+                "enabled": "true",
+                "org_name": "Main Org.",
+                "org_role": "Viewer",
+                "hide_version": "true",
+                "device_limit": "3"
+            }
+        }
+    ]
 
     DASHBOARDS_DIRECTORY = f"{Paths.PROJECT_DIRECTORY}/assets/dashboards"
 
@@ -44,43 +37,105 @@ device_limit = 3
         grafana = Grafana.connect()
         datasource = Grafana.update_datasources(grafana)
         Grafana.update_dashboards(grafana, datasource)
+        Grafana.update_configuration(is_deployment)
 
+    @classmethod
+    def restart(cls):
+        print("\nRestarting Grafana...")
+        if not Utils.has_terminal_output(["sudo", "systemctl", "restart", "grafana-server"]):
+            print("Unable to restart Grafana.")
+        else:
+            print("Successfully restarted Grafana.")
+
+    @classmethod
+    def update_configuration(cls, is_deployment):
         print("\nChanging Grafana configuration file ownership...")
         if not Utils.has_terminal_output(["sudo", "chown", "-R", f"{Utils.os_username()}:root", Grafana.CONFIGURATION_DIRECTORY]):
             print("Unable to change Grafana configuration file ownership.")
         else:
             print("Successfully changed Grafana configuration file ownership.")
-
-            Utils.create_file(Grafana.CONFIGURATION_FILE)
             with open(Grafana.CONFIGURATION_FILE, "r", encoding="utf-8") as file:
-                content = file.read()
-                if content == Grafana.CONFIGURATION:
-                    if is_deployment:
-                        print("\nRestarting Grafana...")
-                        if not Utils.has_terminal_output(["sudo", "systemctl", "restart", "grafana-server"]):
-                            print("Unable to restart Grafana.")
+                lines = file.readlines()
+
+            updated_lines = []
+            sections = set()
+            section_updated = False
+
+            section = None
+            in_section = False
+
+            for line in lines:
+                stripped_line = line.strip()
+
+                # Check if the line indicates a section header
+                if stripped_line.startswith("[") and stripped_line.endswith("]"):
+                    if in_section:
+                        # Process the section if we were previously in one
+                        if section == config['section']:
+                            # Check if there were any changes in the section
+                            if section_updated:
+                                # Add the updated section to the lines
+                                updated_lines.append(f"\n{section}\n")
+                                for key, value in config['config'].items():
+                                    updated_lines.append(
+                                        f"{key} = {value}\n")
+                            else:
+                                # Add the original section
+                                updated_lines.append(line)
+
+                    # Update the current section
+                    section = stripped_line
+                    in_section = False
+                    updated_lines.append(line)
+                    continue
+
+                # Check if we're in a section that needs updating
+                for config in Grafana.CONFIGURATION:
+                    if section == config['section']:
+                        in_section = True
+                        sections.add(section)
+                        keys_to_update = config['config']
+
+                        # Flag to check if any value has changed
+                        section_updated = False
+
+                        # Process key-value pairs within the section
+                        for key, value in keys_to_update.items():
+                            if stripped_line.startswith(key):
+                                # Compare existing value with the new value
+                                if stripped_line != f"{key} = {value}":
+                                    updated_lines.append(
+                                        f"{key} = {value}\n")
+                                    section_updated = True
+                                break
                         else:
-                            print("Successfully restarted Grafana.")
-
-                    print("\nGrafana is already configured.")
+                            updated_lines.append(line)
+                        break
                 else:
-                    is_configured = True
-                    print("\nUpdating Grafana configuration file...")
-                    Utils.update_file(Grafana.CONFIGURATION_FILE,
-                                      Grafana.CONFIGURATION, "w")
-                    print("Successfully updated Grafana configuration file.")
+                    # If not in a section that needs updating, just append the line
+                    if not in_section:
+                        updated_lines.append(line)
 
-                    print("\nRestarting Grafana...")
-                    if not Utils.has_terminal_output(["sudo", "systemctl", "restart", "grafana-server"]):
-                        is_configured = False
-                        print("Unable to restart Grafana.")
-                    else:
-                        print("Successfully restarted Grafana.")
+            # Add any missing sections and key-value pairs
+            for config in Grafana.CONFIGURATION:
+                if config['section'] not in sections:
+                    updated_lines.append(f"\n{config['section']}\n")
+                    for key, value in config['config'].items():
+                        updated_lines.append(f"{key} = {value}\n")
 
-                    if not is_configured:
-                        print("\nUnable to configure Grafana.")
-                    else:
-                        print("\nSuccessfully configured Grafana.")
+            # Write the updated lines back to the file if there were changes
+            if updated_lines != lines:
+                print("\nUpdating Grafana configuration file...")
+                with open(Grafana.CONFIGURATION_FILE, 'w', encoding="utf-8") as file:
+                    file.writelines(updated_lines)
+                print("Successfully updated Grafana configuration file.")
+                Grafana.restart()
+
+            else:
+                print("\nGrafana is already configured.")
+
+                if is_deployment:
+                    Grafana.restart()
 
     @classmethod
     def connect(cls):
