@@ -5,10 +5,10 @@ from app.config.gauges import Gauges
 
 class InternetDownloadSpeed:
 
-    def __init__(self, speedtest, network_name, internet_server):
-        self.get_internet_download_speed(speedtest, network_name, internet_server)
+    def __init__(self, speedtest, network, server):
+        self.get_internet_download_speed(speedtest, network, server)
 
-    def get_internet_download_speed(self, speedtest, network_name, internet_server):
+    def get_internet_download_speed(self, speedtest, network, server):
         print("Measuring internet download speed...")
         internet_download_speed = None
 
@@ -20,8 +20,8 @@ class InternetDownloadSpeed:
                     f"Internet Download Speed: {internet_download_speed:.2f} Mbps")
 
                 Gauges.INTERNET_DOWNLOAD_SPEED_GAUGE.labels(
-                    network_name=network_name,
-                    internet_server=internet_server
+                    network=network,
+                    server=server
                 ).set(internet_download_speed)
 
             except SpeedtestException as error:

@@ -1,6 +1,6 @@
 # Speedtest Service
 ## Getting Started
-TODO (Add project info)
+Speedtest Service is a Python-based project that focuses on setting up a Speedtest service on a Raspberry Pi, using tools like Prometheus, Grafana, and GitHub Actions for monitoring and automation. The repository provides a step-by-step guide on installation and setup, including creating a virtual environment, installing necessary packages, and configuring Prometheus and Grafana.
 
 ## Ookla Speedtest
 TODO (Add Ookla Speedtest info)
@@ -33,9 +33,9 @@ TODO (Add prerequisites info)
   sudo git clone https://github.com/nunodiogosilva/speedtest.git && cd speedtest
   ```
 
-  * Change the ownership of */scripts* directory to your user, you may use the command below. Make sure to replace <username> with your username.
+  * Change the ownership of */scripts* directory to your user, you may use the command below. Make sure to replace *USERNAME* with your username.
   ```bash
-  sudo chown -R <username>:root /scripts
+  sudo chown -R <USERNAME>:root /scripts
   ```
 
   ### 2. Create Virtual Environment
@@ -203,7 +203,7 @@ TODO (Add prerequisites info)
     After=network.target
 
     [Service]
-    EnvironmentFile=/etc/environment
+    EnvironmentFile=/scripts/speedtest/.env
     WorkingDirectory=/scripts/speedtest
     ExecStart=/usr/bin/sh -c "cd /scripts/speedtest && .venv/bin/python3.11 -m app.run"
     Restart=always

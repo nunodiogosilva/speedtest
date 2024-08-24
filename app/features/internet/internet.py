@@ -1,6 +1,6 @@
 import time
 from speedtest import Speedtest, SpeedtestException
-from app.common.network import Network
+from app.common.utils import Utils
 from app.features.internet.usecases.internet_server_latency import InternetServerLatency
 from app.features.internet.usecases.internet_download_speed import InternetDownloadSpeed
 from app.features.internet.usecases.internet_upload_speed import InternetUploadSpeed
@@ -15,22 +15,23 @@ class Internet:
         while speedtest is None:
             try:
                 speedtest = Speedtest()
-                network = Network()
+                network = Utils.os_network()
 
-                internet_server_latency = InternetServerLatency(
+                server = InternetServerLatency(
                     speedtest=speedtest,
-                    network_name=network.name
-                )
+                    network=network
+                ).server
 
                 InternetDownloadSpeed(
                     speedtest=speedtest,
-                    network_name=network.name,
-                    internet_server=internet_server_latency.server
+                    network=network,
+                    server=server
                 )
+
                 InternetUploadSpeed(
                     speedtest=speedtest,
-                    network_name=network.name,
-                    internet_server=internet_server_latency.server
+                    network=network,
+                    server=server
                 )
 
             except SpeedtestException as error:

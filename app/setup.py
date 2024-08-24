@@ -1,3 +1,4 @@
+from app.config.environment import Environment
 from app.config.prometheus import Prometheus
 from app.config.grafana import Grafana
 from app.config.service import Service
@@ -5,6 +6,7 @@ from app.config.service import Service
 
 class Setup:
     def __init__(self):
+        Environment.setup()
         Prometheus.setup()
         Grafana.setup()
         Service.setup()

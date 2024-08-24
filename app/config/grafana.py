@@ -1,6 +1,6 @@
 import os
 import json
-import getpass
+from dotenv import load_dotenv
 from grafana_api.grafana_face import GrafanaFace
 from app.common.utils import Utils
 from app.config.paths import Paths
@@ -17,26 +17,22 @@ class Grafana:
 
     @classmethod
     def setup(cls, is_deployment=False):
+        grafana = Grafana.connect()
+        datasource = Grafana.update_datasources(grafana)
+        Grafana.update_dashboards(grafana, datasource)
+
         if is_deployment:
             print("\nRestarting Grafana...")
             if not Utils.has_terminal_output(["sudo", "systemctl", "restart", "grafana-server"]):
                 print("Unable to restart Grafana.")
             else:
                 print("Successfully restarted Grafana.")
-        else:
-            grafana = Grafana.connect()
-            datasource = Grafana.update_datasources(grafana)
-            Grafana.update_dashboards(grafana, datasource)
 
     @classmethod
     def connect(cls):
-        print(
-            f"\nGet Grafana Service Account Token at {Grafana.URL}/org/serviceaccounts .")
-        api_token = getpass.getpass(
-            "Enter your Grafana Service Account Token:\n>")
-
+        load_dotenv()
         grafana = GrafanaFace(
-            auth=api_token,
+            auth=os.getenv("GRAFANA_API_TOKEN"),
             port=Grafana.PORT
         )
 

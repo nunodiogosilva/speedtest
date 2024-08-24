@@ -108,8 +108,12 @@
                 "value": 0
               },
               {
+                "color": "orange",
+                "value": 25
+              },
+              {
                 "color": "yellow",
-                "value": 50
+                "value": 75
               },
               {
                 "color": "green",
@@ -154,7 +158,7 @@
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "({{network_name}}) - {{internet_server}}",
+          "legendFormat": "({{network}}) - {{server}}",
           "range": true,
           "refId": "A",
           "useBackend": false
@@ -219,12 +223,16 @@
                 "value": 0
               },
               {
-                "color": "yellow",
+                "color": "orange",
                 "value": 25
               },
               {
+                "color": "yellow",
+                "value": 75
+              },
+              {
                 "color": "green",
-                "value": 100
+                "value": 125
               }
             ]
           },
@@ -265,7 +273,7 @@
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "({{network_name}}) - {{internet_server}}",
+          "legendFormat": "({{network}}) - {{server}}",
           "range": true,
           "refId": "A",
           "useBackend": false
@@ -334,8 +342,12 @@
                 "value": 10
               },
               {
+                "color": "orange",
+                "value": 20
+              },
+              {
                 "color": "red",
-                "value": 25
+                "value": 30
               }
             ]
           },
@@ -376,7 +388,7 @@
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "({{network_name}}) - {{internet_server}}",
+          "legendFormat": "({{network}}) - {{server}}",
           "range": true,
           "refId": "A",
           "useBackend": false
@@ -387,7 +399,7 @@
       "type": "timeseries"
     }
   ],
-  "refresh": "",
+  "refresh": "15s",
   "schemaVersion": 38,
   "tags": [],
   "templating": {
@@ -415,6 +427,6 @@
   "timezone": "browser",
   "title": "Speedtest",
   "uid": "aae233cd-38fa-4447-85ee-143d068b2f1c",
-  "version": 8,
+  "version": 1,
   "weekStart": "monday"
 }

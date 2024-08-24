@@ -1,16 +1,93 @@
 import os
+import time
+import platform
 import subprocess
+from dotenv import load_dotenv
 
 
 class Utils:
 
     @staticmethod
-    def username():
-        try:
-            return os.getlogin()
+    def os_username():
+        load_dotenv()
+        return os.getenv("OS_USERNAME")
 
-        except OSError:
-            return "pi"
+    @staticmethod
+    def os_network():
+        os_name = platform.system()
+
+        if os_name == "Windows":
+            return Utils.get_os_network_windows()
+
+        if os_name == "Darwin":
+            return Utils.get_os_network_macos()
+
+        if os_name == "Linux":
+            return Utils.get_os_network_linux()
+
+        return "N/A"
+
+    @staticmethod
+    def get_os_network_windows():
+        network = None
+
+        while network is None:
+            try:
+                output = subprocess.check_output(
+                    ["netsh", "wlan", "show", "interfaces"], encoding='utf-8'
+                )
+                for line in output.split('\n'):
+                    if "SSID" in line:
+                        ssid = line.split(":")[1].strip()
+                        if ssid:
+                            network = ssid
+                            print(f"Network: {network}")
+
+            except subprocess.CalledProcessError as error:
+                print(error)
+                print("Retrying in 1 second...")
+                time.sleep(1)
+
+        return network
+
+    @staticmethod
+    def get_os_network_macos():
+        network = None
+
+        while network is None:
+            try:
+                output = subprocess.check_output(
+                    ["networksetup", "-getairportnetwork", "en0"], encoding='utf-8'
+                )
+                if "Current Wi-Fi Network" in output:
+                    network = output.split(": ")[1].strip()
+                    print(f"Network: {network}")
+
+            except subprocess.CalledProcessError as error:
+                print(error)
+                print("Retrying in 1 second...")
+                time.sleep(1)
+
+        return network
+
+    @staticmethod
+    def get_os_network_linux():
+        network = None
+
+        while network is None:
+            try:
+                output = subprocess.check_output(
+                    ["iwgetid", "-r"], encoding='utf-8'
+                )
+                network = output.strip()
+                print(f"Network: {network}")
+
+            except subprocess.CalledProcessError as error:
+                print(error)
+                print("Retrying in 1 second...")
+                time.sleep(1)
+
+        return network
 
     @staticmethod
     def create_file(file, content="", permission=None):

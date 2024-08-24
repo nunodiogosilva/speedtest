@@ -1,4 +1,5 @@
 from app.common.utils import Utils
+from app.config.environment import Environment
 from app.config.paths import Paths
 
 
@@ -18,7 +19,7 @@ Description={DESCRIPTION}
 After=network.target
 
 [Service]
-EnvironmentFile={Paths.ENVIRONMENT_FILE}
+EnvironmentFile={Environment.CONFIGURATION_FILE}
 WorkingDirectory={Paths.PROJECT_DIRECTORY}
 ExecStart={Paths.BASH_INTERPRETER_FILE} -c "cd {Paths.PROJECT_DIRECTORY} && {Paths.PYTHON_INTERPRETER_FILE} -m app.run"
 Restart=always
@@ -31,7 +32,7 @@ WantedBy=multi-user.target
     def setup(cls, is_deployment=False):
         print(
             f"\nChanging {Service.DESCRIPTION} Systemd service configuration file ownership...")
-        if not Utils.has_terminal_output(["sudo", "chown", "-R", f"{Utils.username()}:root", Service.CONFIGURATION_DIRECTORY]):
+        if not Utils.has_terminal_output(["sudo", "chown", "-R", f"{Utils.os_username()}:root", Service.CONFIGURATION_DIRECTORY]):
             print(
                 f"Unable to change {Service.DESCRIPTION} Systemd service configuration file ownership.")
         else:
