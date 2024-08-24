@@ -399,14 +399,14 @@
       "type": "timeseries"
     }
   ],
-  "refresh": "15s",
+  "refresh": "10s",
   "schemaVersion": 38,
   "tags": [],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {
