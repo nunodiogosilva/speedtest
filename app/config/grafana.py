@@ -41,6 +41,10 @@ device_limit = 3
 
     @classmethod
     def setup(cls, is_deployment=False):
+        grafana = Grafana.connect()
+        datasource = Grafana.update_datasources(grafana)
+        Grafana.update_dashboards(grafana, datasource)
+
         print("\nChanging Grafana configuration file ownership...")
         if not Utils.has_terminal_output(["sudo", "chown", "-R", f"{Utils.os_username()}:root", Grafana.CONFIGURATION_DIRECTORY]):
             print("Unable to change Grafana configuration file ownership.")
@@ -77,10 +81,6 @@ device_limit = 3
                         print("\nUnable to configure Grafana.")
                     else:
                         print("\nSuccessfully configured Grafana.")
-
-            grafana = Grafana.connect()
-            datasource = Grafana.update_datasources(grafana)
-            Grafana.update_dashboards(grafana, datasource)
 
     @classmethod
     def connect(cls):
