@@ -13,20 +13,74 @@ class Grafana:
 
     URL = f"http://localhost:{PORT}"
 
+    CONFIGURATION_DIRECTORY = "/etc/grafana"
+
+    CONFIGURATION_FILE = f"{CONFIGURATION_DIRECTORY}/grafana.ini"
+
+    CONFIGURATION = """
+#################################### Anonymous Auth ######################
+[auth.anonymous]
+# Enable anonymous access
+enabled = true
+
+# Organization name that should be used for unauthenticated users
+org_name = Main Org.
+
+# Role for unauthenticated users, other valid values are `Editor` and `Admin`
+org_role = Viewer
+
+# Hide the Grafana version text from the footer and help tooltip for unauthenticated users (default: false)
+hide_version = true
+
+# Setting this limits the number of anonymous devices in your instance. Any new anonymous devices added after the limit has been reached will be denied access.
+device_limit = 3
+
+"""
+
     DASHBOARDS_DIRECTORY = f"{Paths.PROJECT_DIRECTORY}/assets/dashboards"
 
     @classmethod
     def setup(cls, is_deployment=False):
-        grafana = Grafana.connect()
-        datasource = Grafana.update_datasources(grafana)
-        Grafana.update_dashboards(grafana, datasource)
+        print("\nChanging Grafana configuration file ownership...")
+        if not Utils.has_terminal_output(["sudo", "chown", "-R", f"{Utils.os_username()}:root", Grafana.CONFIGURATION_DIRECTORY]):
+            print("Unable to change Grafana configuration file ownership.")
+        else:
+            print("Successfully changed Grafana configuration file ownership.")
 
-        if is_deployment:
-            print("\nRestarting Grafana...")
-            if not Utils.has_terminal_output(["sudo", "systemctl", "restart", "grafana-server"]):
-                print("Unable to restart Grafana.")
-            else:
-                print("Successfully restarted Grafana.")
+            Utils.create_file(Grafana.CONFIGURATION_FILE)
+            with open(Grafana.CONFIGURATION_FILE, "r", encoding="utf-8") as file:
+                content = file.read()
+                if content == Grafana.CONFIGURATION:
+                    if is_deployment:
+                        print("\nRestarting Grafana...")
+                        if not Utils.has_terminal_output(["sudo", "systemctl", "restart", "grafana-server"]):
+                            print("Unable to restart Grafana.")
+                        else:
+                            print("Successfully restarted Grafana.")
+
+                    print("\nGrafana is already configured.")
+                else:
+                    is_configured = True
+                    print("\nUpdating Grafana configuration file...")
+                    Utils.update_file(Grafana.CONFIGURATION_FILE,
+                                      Grafana.CONFIGURATION, "w")
+                    print("Successfully updated Grafana configuration file.")
+
+                    print("\nRestarting Grafana...")
+                    if not Utils.has_terminal_output(["sudo", "systemctl", "restart", "grafana-server"]):
+                        is_configured = False
+                        print("Unable to restart Grafana.")
+                    else:
+                        print("Successfully restarted Grafana.")
+
+                    if not is_configured:
+                        print("\nUnable to configure Grafana.")
+                    else:
+                        print("\nSuccessfully configured Grafana.")
+
+            grafana = Grafana.connect()
+            datasource = Grafana.update_datasources(grafana)
+            Grafana.update_dashboards(grafana, datasource)
 
     @classmethod
     def connect(cls):
