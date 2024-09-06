@@ -6,7 +6,7 @@ class App:
 
     def __init__(self):
         # Start Prometheus HTTP server
-        Prometheus.start_server()
+        Prometheus().start_server()
 
         # Periodically measure and update metrics
         while True:

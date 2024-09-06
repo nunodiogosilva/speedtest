@@ -1,99 +1,46 @@
+import os
+from dotenv import load_dotenv
 from app.common.utils import Utils
-from app.config.environment import Environment
 from app.config.paths import Paths
 
 
 class Service:
 
-    NAME = "speedtest"
+    def __init__(self):
+        load_dotenv()
+        self.name = "speedtest"
+        self.description = "Speedtest Service"
+        self.config = f"{os.getenv('SYSTEMD_CONFIG_PATH')}/{self.name}.service"
+        self.templates = f"{Paths.TEMPLATES_DIRECTORY}/speedtest"
+        self.config_template = f"{self.templates}/speedtest.service"
+        self.config_template_args = {
+            "description": self.description,
+            "environment": Paths.ENVIRONMENT_FILE,
+            "project": Paths.PROJECT_DIRECTORY,
+            "bash_interpreter": Paths.BASH_INTERPRETER_FILE,
+            "python_interpreter": Paths.PYTHON_INTERPRETER_FILE
+        }
 
-    DESCRIPTION = "Speedtest Service"
+    def setup(self, is_deployment=False):
+        Utils.create_file(self.config)
+        config_content = Utils.get_file_content(self.config)
+        config_template_content = Utils.get_template_content(
+            self.templates,
+            self.config_template,
+            self.config_template_args
+        )
+        if config_content == config_template_content:
+            print(f"{self.description} is already configured.")
 
-    CONFIGURATION_DIRECTORY = "/etc/systemd/system"
-
-    CONFIGURATION_FILE = f"{CONFIGURATION_DIRECTORY}/{NAME}.service"
-
-    CONFIGURATION = f"""
-[Unit]
-Description={DESCRIPTION}
-After=network.target
-
-[Service]
-EnvironmentFile={Environment.CONFIGURATION_FILE}
-WorkingDirectory={Paths.PROJECT_DIRECTORY}
-ExecStart={Paths.BASH_INTERPRETER_FILE} -c "cd {Paths.PROJECT_DIRECTORY} && {Paths.PYTHON_INTERPRETER_FILE} -m app.run"
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-"""
-
-    @classmethod
-    def setup(cls, is_deployment=False):
-        print(
-            f"\nChanging {Service.DESCRIPTION} Systemd service configuration file ownership...")
-        if not Utils.has_terminal_output(["sudo", "chown", "-R", f"{Utils.os_username()}:root", Service.CONFIGURATION_DIRECTORY]):
-            print(
-                f"Unable to change {Service.DESCRIPTION} Systemd service configuration file ownership.")
+            if is_deployment:
+                Utils.restart_service(self.name, self.description)
         else:
+            print(f"Updating {self.description} configuration file...")
+            Utils.update_file(self.config, config_template_content, "w")
             print(
-                f"Successfully changed {Service.DESCRIPTION} Systemd service configuration file ownership.")
+                f"Successfully updated {self.description} configuration file.")
 
-            Utils.create_file(Service.CONFIGURATION_FILE)
-            with open(Service.CONFIGURATION_FILE, "r", encoding="utf-8") as file:
-                content = file.read()
-                if content == Service.CONFIGURATION:
-                    if is_deployment:
-                        print(
-                            f"\nRestarting {Service.DESCRIPTION} Systemd service...")
-                        if not Utils.has_terminal_output(["sudo", "systemctl", "restart", f"{Service.NAME}.service"]):
-                            print(
-                                f"Unable to restart {Service.DESCRIPTION} Systemd service.")
-                        else:
-                            print(
-                                f"Successfully restarted {Service.DESCRIPTION} Systemd service.")
-
-                    print(
-                        f"\n{Service.DESCRIPTION} Systemd service is already configured.")
-                else:
-                    is_configured = True
-                    print(
-                        f"\nUpdating {Service.DESCRIPTION} Systemd service configuration file...")
-                    Utils.update_file(Service.CONFIGURATION_FILE,
-                                      Service.CONFIGURATION, "w")
-                    print(
-                        f"Successfully updated {Service.DESCRIPTION} Systemd service configuration file.")
-
-                    print("\nReloading Systemd files...")
-                    if not Utils.has_terminal_output(["sudo", "systemctl", "daemon-reload"]):
-                        print("Unable to reload Systemd files.")
-                        is_configured = False
-                    else:
-                        print("Successfully reloaded Systemd files.")
-
-                        print(
-                            f"\nEnabling {Service.DESCRIPTION} Systemd service...")
-                        if not Utils.has_terminal_output(["sudo", "systemctl", "enable", f"{Service.NAME}.service"]):
-                            is_configured = False
-                            print(
-                                f"Unable to enable {Service.DESCRIPTION} Systemd service.")
-                        else:
-                            print(
-                                f"Successfully enabled {Service.DESCRIPTION} Systemd service.")
-
-                            print(
-                                f"\nStarting {Service.DESCRIPTION} Systemd service...")
-                            if not Utils.has_terminal_output(["sudo", "systemctl", "start", f"{Service.NAME}.service"]):
-                                is_configured = False
-                                print(
-                                    f"Unable to start {Service.DESCRIPTION} Systemd service.")
-                            else:
-                                print(
-                                    f"Successfully started {Service.DESCRIPTION} Systemd service.")
-
-                    if not is_configured:
-                        print(
-                            f"\nUnable to configure {Service.DESCRIPTION} Systemd service.")
-                    else:
-                        print(
-                            f"\nSuccessfully configured {Service.DESCRIPTION} Systemd service.")
+            if is_deployment:
+                Utils.restart_service(self.name, self.description)
+            else:
+                Utils.reload_service(self.name, self.description)

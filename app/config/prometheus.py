@@ -1,93 +1,39 @@
+import os
+from dotenv import load_dotenv
 from prometheus_client import start_http_server
 from app.common.utils import Utils
+from app.config.paths import Paths
 
 
 class Prometheus:
 
-    PORT = 9090
+    def __init__(self):
+        load_dotenv()
+        self.service_name = "prometheus"
+        self.service_description = "Prometheus"
+        self.metrics_port = os.getenv("PROMETHEUS_METRICS_PORT")
+        self.config = os.getenv("PROMETHEUS_CONFIG_PATH")
+        self.templates = f"{Paths.TEMPLATES_DIRECTORY}/prometheus"
+        self.config_template = f"{self.templates}/prometheus.yml"
 
-    URL = f"http://localhost:{PORT}"
+    def setup(self, is_deployment=False):
+        Utils.create_file(self.config)
+        config_content = Utils.get_file_content(self.config)
+        config_template_content = Utils.get_file_content(self.config_template)
+        if config_content == config_template_content:
+            print("Prometheus is already configured.")
 
-    NODE_PORT = 9100
-
-    METRICS_PORT = 8000
-
-    CONFIGURATION_DIRECTORY = "/etc/prometheus"
-
-    CONFIGURATION_FILE = f"{CONFIGURATION_DIRECTORY}/prometheus.yml"
-
-    CONFIGURATION = f"""
-# Global configuration
-global:
-  scrape_interval: 15s # How often to scrape metrics (default is 1m)
-  evaluation_interval: 15s # How often to evaluate rules (default is 1m)
-
-# A scrape configuration containing endpoints to scrape.
-scrape_configs:
-  - job_name: 'prometheus'
-    static_configs:
-      - targets: ['localhost:{PORT}']
-
-  - job_name: 'node'
-    static_configs:
-      - targets: ['localhost:{NODE_PORT}']
-
-  - job_name: 'metrics'
-    static_configs:
-      - targets: ['localhost:{METRICS_PORT}']
-"""
-
-    DATASOURCE = {
-        "name": "Prometheus",
-        "type": "prometheus",
-        "url": URL,
-        "access": "proxy",
-        "basicAuth": False,
-        "isDefault": True,
-        "jsonData": {
-            "httpMethod": "POST"
-        }
-    }
-
-    @classmethod
-    def setup(cls, is_deployment=False):
-        print("\nChanging Prometheus configuration file ownership...")
-        if not Utils.has_terminal_output(["sudo", "chown", "-R", f"{Utils.os_username()}:root", Prometheus.CONFIGURATION_DIRECTORY]):
-            print("Unable to change Prometheus configuration file ownership.")
+            if is_deployment:
+                Utils.restart_service(self.service_name, self.service_description)
         else:
-            print("Successfully changed Prometheus configuration file ownership.")
+            print("Updating Prometheus configuration file...")
+            Utils.update_file(self.config, config_template_content, "w")
+            print("Successfully updated Prometheus configuration file.")
 
-            Utils.create_file(Prometheus.CONFIGURATION_FILE)
-            with open(Prometheus.CONFIGURATION_FILE, "r", encoding="utf-8") as file:
-                content = file.read()
-                if content == Prometheus.CONFIGURATION:
-                    if is_deployment:
-                        print("\nRestarting Prometheus...")
-                        if not Utils.has_terminal_output(["sudo", "systemctl", "restart", "prometheus"]):
-                            print("Unable to restart Prometheus.")
-                        else:
-                            print("Successfully restarted Prometheus.")
+            if is_deployment:
+                Utils.restart_service(self.service_name, self.service_description)
+            else:
+                Utils.reload_service(self.service_name, self.service_description)
 
-                    print("\nPrometheus is already configured.")
-                else:
-                    is_configured = True
-                    print("\nUpdating Prometheus configuration file...")
-                    Utils.update_file(Prometheus.CONFIGURATION_FILE,
-                                      Prometheus.CONFIGURATION, "w")
-                    print("Successfully updated Prometheus configuration file.")
-
-                    print("\nRestarting Prometheus...")
-                    if not Utils.has_terminal_output(["sudo", "systemctl", "restart", "prometheus"]):
-                        is_configured = False
-                        print("Unable to restart Prometheus.")
-                    else:
-                        print("Successfully restarted Prometheus.")
-
-                    if not is_configured:
-                        print("\nUnable to configure Prometheus.")
-                    else:
-                        print("\nSuccessfully configured Prometheus.")
-
-    @classmethod
-    def start_server(cls):
-        start_http_server(Prometheus.METRICS_PORT)
+    def start_server(self):
+        start_http_server(self.metrics_port)

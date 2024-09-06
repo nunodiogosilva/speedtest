@@ -6,6 +6,12 @@ class Paths:
 
     PROJECT_DIRECTORY = "/scripts/speedtest"
 
+    ASSETS_DIRECTORY = f"{PROJECT_DIRECTORY}/assets"
+
+    TEMPLATES_DIRECTORY = f"{ASSETS_DIRECTORY}/templates"
+
     ERRORS_DIRECTORY = f"{PROJECT_DIRECTORY}/errors"
 
     LOGS_DIRECTORY = f"{PROJECT_DIRECTORY}/logs"
+
+    ENVIRONMENT_FILE = f"{PROJECT_DIRECTORY}/.env"
