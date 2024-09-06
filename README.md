@@ -268,7 +268,6 @@ TODO (Add prerequisites info)
 |------------------------------------------------------------------------------|---------|
 | <img src="assets/images/linux.png" alt="linux" width="50" height="auto">     | Linux   |
 | <img src="assets/images/macos.png" alt="macos" width="50" height="auto">     | macOS   |
-<!-- | <img src="assets/images/windows.png" alt="windows" width="50" height="auto"> | Windows | -->
 
 ## Authors & Maintainers
 | Name       | LinkedIn                                                                      | Role   |
