@@ -1,13 +1,56 @@
 import os
-import json
-import yaml
 import time
 import platform
 import subprocess
+import json
+import yaml
 from jinja2 import Environment, FileSystemLoader
 
 
 class Utils:
+
+    @staticmethod
+    def os_hostname():
+        os_name = platform.system()
+
+        if os_name == "Darwin":
+            return Utils.get_os_hostname_macos()
+
+        if os_name == "Linux":
+            return Utils.get_os_hostname_linux()
+        return "localhost"
+
+    @staticmethod
+    def get_os_hostname_macos():
+        hostname = None
+
+        while hostname is None:
+            try:
+                output = Utils.get_terminal_output(["hostname"])
+                hostname = output.strip()
+                print(f"Hostname: {hostname}")
+
+            except subprocess.CalledProcessError as error:
+                print(error)
+                print("Retrying in 1 second...")
+                time.sleep(1)
+        return hostname
+
+    @staticmethod
+    def get_os_hostname_linux():
+        hostname = None
+
+        while hostname is None:
+            try:
+                output = Utils.get_terminal_output(["hostnamectl"])
+                hostname = output.strip()
+                print(f"Hostname: {hostname}")
+
+            except subprocess.CalledProcessError as error:
+                print(error)
+                print("Retrying in 1 second...")
+                time.sleep(1)
+        return hostname
 
     @staticmethod
     def os_network():
@@ -26,9 +69,8 @@ class Utils:
 
         while network is None:
             try:
-                output = subprocess.check_output(
-                    ["networksetup", "-getairportnetwork", "en0"], encoding="utf-8"
-                )
+                output = Utils.get_terminal_output(
+                    ["networksetup", "-getairportnetwork", "en0"])
                 if "Current Wi-Fi Network" in output:
                     network = output.split(": ")[1].strip()
                     print(f"Network: {network}")
@@ -45,9 +87,7 @@ class Utils:
 
         while network is None:
             try:
-                output = subprocess.check_output(
-                    ["iwgetid", "-r"], encoding="utf-8"
-                )
+                output = Utils.get_terminal_output(["iwgetid", "-r"])
                 network = output.strip()
                 print(f"Network: {network}")
 
@@ -69,7 +109,12 @@ class Utils:
     @staticmethod
     def update_file(file, content, update_type, permission=None):
         with open(file, update_type, encoding="utf-8") as updated_file:
-            updated_file.write(content)
+            if file.endswith(".json"):
+                json.dump(content, updated_file, indent=4)
+            elif file.endswith(".yml") or file.endswith(".yaml"):
+                yaml.dump(content, updated_file, default_flow_style=False)
+            else:
+                updated_file.write(content)
 
         if permission:
             os.chmod(file, int(f"0o{permission}", 8))
