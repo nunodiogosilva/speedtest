@@ -12,10 +12,10 @@ class Prometheus:
         self.hostname = Utils.os_hostname()
         self.service_name = "prometheus"
         self.service_description = "Prometheus"
-        self.port = os.getenv("PROMETHEUS_PORT")
-        self.node_port = os.getenv("PROMETHEUS_NODE_PORT")
-        self.metrics_port = os.getenv("PROMETHEUS_METRICS_PORT")
-        self.alertmanager_port = os.getenv("PROMETHEUS_ALERTMANAGER_PORT")
+        self.port = int(os.getenv("PROMETHEUS_PORT"))
+        self.node_port = int(os.getenv("PROMETHEUS_NODE_PORT"))
+        self.metrics_port = int(os.getenv("PROMETHEUS_METRICS_PORT"))
+        self.alertmanager_port = int(os.getenv("PROMETHEUS_ALERTMANAGER_PORT"))
         self.config = os.getenv("PROMETHEUS_CONFIG_PATH")
         self.templates = f"{Paths.TEMPLATES_DIRECTORY}/prometheus"
         self.config_template = f"{self.templates}/prometheus.yml"
