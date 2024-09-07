@@ -94,14 +94,12 @@ class Utils:
 
     @staticmethod
     def get_template_content(directory, file, args):
-        if os.path.exists(file):
-            template_directory = Environment(
-                loader=FileSystemLoader(directory)
-            )
-            template_file = template_directory.get_template(file)
-            template_content = template_file.render(args)
-            return template_content
-        return False
+        template_directory = Environment(
+            loader=FileSystemLoader(directory)
+        )
+        template_file = template_directory.get_template(file)
+        template_content = template_file.render(args)
+        return template_content
 
     @staticmethod
     def has_terminal_output(command: list):

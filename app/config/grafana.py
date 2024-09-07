@@ -16,7 +16,7 @@ class Grafana:
         self.config_template = f"{self.templates}/grafana.ini"
         self.connection = self.connect(
             os.getenv("GRAFANA_API_TOKEN"),
-            os.getenv("GRAFANA_PORT")
+            int(os.getenv("GRAFANA_PORT"))
         )
         self.datasource = {
             "name": "Prometheus",
