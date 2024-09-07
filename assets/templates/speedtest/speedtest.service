@@ -1,0 +1,12 @@
+[Unit]
+Description={{ description }}
+After=network.target
+
+[Service]
+EnvironmentFile={{ environment }}
+WorkingDirectory={{ project }}
+ExecStart={{ bash_interpreter }} -c "cd {{ project }} && sudo {{ python_interpreter }} -m app.run"
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

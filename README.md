@@ -14,7 +14,7 @@ TODO (Add prerequisites info)
   ### 1. Clone GitHub Repository
   * Firstly let's ensure that your packages are up to date and then install Git.
   ```bash
-  sudo apt-get update
+  sudo apt-get update && sudo apt-get upgrade
   sudo apt-get install git
   ```
 
@@ -43,7 +43,7 @@ TODO (Add prerequisites info)
 
   * To create a virtual environment, run the command below in */scripts/speedtest* directory. This will create a new virtual environment in a local folder named *.venv*.
   ```bash
-  python3.11 -m venv .venv
+  sudo python3.11 -m venv .venv
   ```
 
   * Before you can start installing or using packages in your virtual environment you'll need to activate it in */scripts/speedtest* directory. Activating a virtual environment will put the virtual environment specific Python and pip executables into your terminal.
@@ -143,7 +143,7 @@ TODO (Add prerequisites info)
   ### 6. Speedtest Service Setup
   * In order to setup Speedtest Service on your Raspberry Pi, you may set it up automatically or manually. To do it automatically you may use the command below in */scripts/speedtest* directory.
   ```bash
-  python3.11 -m app.setup
+  sudo python3.11 -m app.setup
   ```
 
   * (Optional) If you want to setup Speedtest Service manually, you may follow the steps below.
@@ -205,7 +205,7 @@ TODO (Add prerequisites info)
     [Service]
     EnvironmentFile=/scripts/speedtest/.env
     WorkingDirectory=/scripts/speedtest
-    ExecStart=/usr/bin/sh -c "cd /scripts/speedtest && .venv/bin/python3.11 -m app.run"
+    ExecStart=/usr/bin/sh -c "cd /scripts/speedtest && sudo .venv/bin/python3.11 -m app.run"
     Restart=always
 
     [Install]
@@ -268,7 +268,6 @@ TODO (Add prerequisites info)
 |------------------------------------------------------------------------------|---------|
 | <img src="assets/images/linux.png" alt="linux" width="50" height="auto">     | Linux   |
 | <img src="assets/images/macos.png" alt="macos" width="50" height="auto">     | macOS   |
-<!-- | <img src="assets/images/windows.png" alt="windows" width="50" height="auto"> | Windows | -->
 
 ## Authors & Maintainers
 | Name       | LinkedIn                                                                      | Role   |

@@ -7,25 +7,75 @@ from app.config.paths import Paths
 
 class Environment:
 
-    VARIABLES = [
-        "OS_USERNAME",
-        "GRAFANA_API_TOKEN"
-    ]
+    def __init__(self):
+        self.variables = [
+            {
+                "key": "PROMETHEUS_CONFIG_PATH",
+                "default": "/etc/prometheus/prometheus.yml",
+                "hint": "(leave blank for default)"
+            },
+            {
+                "key": "PROMETHEUS_PORT",
+                "default": 9090,
+                "hint": "(leave blank for default)"
+            },
+            {
+                "key": "PROMETHEUS_URL",
+                "default": "http://localhost:9090",
+                "hint": "(leave blank for default)"
+            },
+            {
+                "key": "PROMETHEUS_NODE_PORT",
+                "default": 9100,
+                "hint": "(leave blank for default)"
+            },
+            {
+                "key": "PROMETHEUS_METRICS_PORT",
+                "default": 8000,
+                "hint": "(leave blank for default)"
+            },
+            {
+                "key": "GRAFANA_CONFIG_PATH",
+                "default": "/etc/grafana/grafana.ini",
+                "hint": "(leave blank for default)"
+            },
+            {
+                "key": "GRAFANA_PORT",
+                "default": 3000,
+                "hint": "(leave blank for default)"
+            },
+            {
+                "key": "GRAFANA_URL",
+                "default": "http://localhost:3000",
+                "hint": "(leave blank for default)"
+            },
+            {
+                "key": "GRAFANA_API_TOKEN",
+                "hint": "(Get Service Account Token at http://localhost:3000/org/serviceaccounts)"
+            },
+            {
+                "key": "SYSTEMD_CONFIG_PATH",
+                "default": "/etc/systemd/system",
+                "hint": "(leave blank for default)"
+            }
+        ]
 
-    CONFIGURATION_FILE = f"{Paths.PROJECT_DIRECTORY}/.env"
-
-    @classmethod
-    def setup(cls):
+    def setup(self):
         load_dotenv()
-        print("\nConfiguring Environment variables...")
-        Utils.create_file(Environment.CONFIGURATION_FILE)
-        for variable in Environment.VARIABLES:
-            if not os.getenv(variable):
-                value = getpass.getpass(
-                    f"Enter {variable} Environment variable value:\n> ")
-                content = f'{variable}="{value}"\n'
-                Utils.update_file(Environment.CONFIGURATION_FILE, content, "a")
+        print("Configuring Environment variables...")
+        Utils.create_file(Paths.ENVIRONMENT_FILE)
+        for variable in self.variables:
+            if not os.getenv(variable["key"]):
+                value = getpass.getpass(f"Enter {variable['key']} Environment variable value:\n>{variable['hint']} ").strip()
+                if not value:
+                    value = variable["default"] if variable["default"] else None
+                    while value is None:
+                        print(f"{variable['key']} Environment variable has no default value.")
+                        value = getpass.getpass(f"Enter {variable['key']} Environment variable value:\n>{variable['hint']} ").strip()
+                        if not value:
+                            value = None
+                content = f'{variable["key"]}="{value}"\n'
+                Utils.update_file(Paths.ENVIRONMENT_FILE, content, "a")
 
             else:
-                print(
-                    f"{os.getenv(variable)} Environment variable already configured.")
+                print(f"{variable['key']} Environment variable is already configured.")
