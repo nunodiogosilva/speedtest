@@ -143,7 +143,7 @@ TODO (Add prerequisites info)
   ### 6. Speedtest Service Setup
   * In order to setup Speedtest Service on your Raspberry Pi, you may set it up automatically or manually. To do it automatically you may use the command below in */scripts/speedtest* directory.
   ```bash
-  sudo python3.11 -m app.setup
+  sudo .venv/bin/python3.11 -m app.setup
   ```
 
   * (Optional) If you want to setup Speedtest Service manually, you may follow the steps below.

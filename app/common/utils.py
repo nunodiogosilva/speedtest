@@ -1,5 +1,6 @@
 import os
 import time
+import socket
 import platform
 import subprocess
 import json
@@ -11,46 +12,7 @@ class Utils:
 
     @staticmethod
     def os_hostname():
-        os_name = platform.system()
-
-        if os_name == "Darwin":
-            return Utils.get_os_hostname_macos()
-
-        if os_name == "Linux":
-            return Utils.get_os_hostname_linux()
-        return "localhost"
-
-    @staticmethod
-    def get_os_hostname_macos():
-        hostname = None
-
-        while hostname is None:
-            try:
-                output = Utils.get_terminal_output(["hostname"])
-                hostname = output.strip()
-                print(f"Hostname: {hostname}")
-
-            except subprocess.CalledProcessError as error:
-                print(error)
-                print("Retrying in 1 second...")
-                time.sleep(1)
-        return hostname
-
-    @staticmethod
-    def get_os_hostname_linux():
-        hostname = None
-
-        while hostname is None:
-            try:
-                output = Utils.get_terminal_output(["hostnamectl"])
-                hostname = output.strip()
-                print(f"Hostname: {hostname}")
-
-            except subprocess.CalledProcessError as error:
-                print(error)
-                print("Retrying in 1 second...")
-                time.sleep(1)
-        return hostname
+        return socket.gethostname()
 
     @staticmethod
     def os_network():

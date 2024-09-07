@@ -12,7 +12,7 @@ class Service:
         self.description = "Speedtest Service"
         self.config = f"{os.getenv('SYSTEMD_CONFIG_PATH')}/{self.name}.service"
         self.templates = f"{Paths.TEMPLATES_DIRECTORY}/speedtest"
-        self.config_template = f"{self.templates}/speedtest.service"
+        self.config_template = "speedtest.service"
         self.config_template_args = {
             "description": self.description,
             "environment": Paths.ENVIRONMENT_FILE,
