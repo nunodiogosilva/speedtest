@@ -17,7 +17,6 @@ class Grafana:
         self.config_template = f"{self.templates}/grafana.ini"
         self.connection = self.connect(
             os.getenv("GRAFANA_API_TOKEN"),
-            self.hostname,
             int(os.getenv("GRAFANA_PORT"))
         )
         self.datasource = {
@@ -55,10 +54,9 @@ class Grafana:
         datasource = self.update_datasource()
         self.update_dashboards(datasource)
 
-    def connect(self, api_token, host, port):
+    def connect(self, api_token, port):
         connection = GrafanaFace(
             auth=api_token,
-            host=host,
             port=port
         )
 
